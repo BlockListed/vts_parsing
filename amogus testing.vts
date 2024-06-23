@@ -1,0 +1,464 @@
+CustomScenario
+{
+	gameVersion = 1.10.0p20
+	campaignID = 
+	campaignOrderIdx = -1
+	scenarioName = amogus testing
+	scenarioID = amogus testing
+	scenarioDescription = 
+	mapID = cool_testing
+	vehicle = EF-24G
+	multiplayer = False
+	allowedEquips = ef24_gun;ef24_aim9x1;ef24_aim9e;ef24_airst-x1;ef24_aim7Rail;ef24_aim7drop;ef24_amraamRail;ef24_amraamUnder;ef24_phoenixUnder;ef24_phoenixSide;ef24_harmx1;ef24_harmSDx1;ef24_marmx1;ef24_sidearmx1;ef24_gbu12x1;ef24_gbu12x2;ef24_gbu12x3;ef24_gbu38x1;ef24_gbu38x2;ef24_gbu38x3;ef24_gbu39x4;ef24_mk82x1;ef24_mk82x2;ef24_mk82x3;ef24_mk82x4;ef24_mk82HDx1;ef24_mk82HDx2;ef24_mk82HDx3;ef24_mk82HDx4;ef24_mk83x1;ef24_mk83x2;ef24_agm161;ef24_agm89x1;ef24_droptank;ef24_tgp;ef24_jammerSuper;ef24_maldx1;
+	forcedEquips = ef24_gun;ef24_jammerSuper;ef24_jammerSuper;ef24_harmSDx1;ef24_harmSDx1;ef24_harmSDx1;ef24_harmSDx1;ef24_jammerSuper;ef24_harmSDx1;ef24_harmSDx1;ef24_jammerSuper;ef24_droptank;ef24_droptank;ef24_tgp;
+	forceEquips = True
+	normForcedFuel = 1
+	equipsConfigurable = False
+	baseBudget = 100000
+	isTraining = False
+	rtbWptID = unit:0
+	refuelWptID = 
+	infiniteAmmo = False
+	infAmmoReloadDelay = 5
+	fuelDrainMult = 1
+	envName = day
+	selectableEnv = False
+	windDir = 0
+	windSpeed = 0
+	windVariation = 0
+	windGusts = 0
+	defaultWeather = 0
+	customTimeOfDay = 11
+	overrideLocation = False
+	overrideLatitude = 0
+	overrideLongitude = 26.39999
+	month = 1
+	day = 1
+	year = 2024
+	qsMode = Anywhere
+	qsLimit = -1
+	WEATHER_PRESETS
+	{
+	}
+	UNITS
+	{
+		UnitSpawner
+		{
+			unitName = Aircraft Carrier
+			globalPosition = (25433.526344299316, -5, 59466.845458984375)
+			unitInstanceID = 0
+			unitID = AlliedCarrier
+			rotation = (0, 0, 0)
+			spawnChance = 100
+			lastValidPlacement = (25433.526344299316, -5, 59466.845458984375)
+			editorPlacementMode = Sea
+			spawnFlags = 
+			UnitFields
+			{
+				unitGroup = null
+				defaultBehavior = Parked
+				defaultWaypoint = 0
+				defaultPath = null
+				hullNumber = 0
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+				carrierSpawns = 
+			}
+		}
+		UnitSpawner
+		{
+			unitName = Player
+			globalPosition = (25451.497863769531, 20.897872924804688, 59412.74658203125)
+			unitInstanceID = 2
+			unitID = PlayerSpawn
+			rotation = (0, 0, 0)
+			spawnChance = 100
+			lastValidPlacement = (25451.497863769531, 20.897872924804688, 59412.74658203125)
+			editorPlacementMode = Air
+			spawnFlags = 
+			UnitFields
+			{
+				startMode = Cold
+				initialSpeed = 0
+				unitGroup = null
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM S/A Radar
+			globalPosition = (110514.04736328125, 492.23583984375, 98159.17626953125)
+			unitInstanceID = 3
+			unitID = SamFCR2
+			rotation = (-1.729096E-06, 259.4979, -9.327461E-06)
+			spawnChance = 100
+			lastValidPlacement = (110514.04736328125, 492.23583984375, 98159.17626953125)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = Mobile Missile Warning Truck
+			globalPosition = (110725.99124145508, 456.2366943359375, 98359.684509277344)
+			unitInstanceID = 5
+			unitID = EMWSTruck
+			rotation = (353.1366, 258.2501, 10.32997)
+			spawnChance = 100
+			lastValidPlacement = (110725.99124145508, 456.2366943359375, 98359.684509277344)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 
+				decoyUnits = 
+				unitsToDefend = 
+				defenseUnits = 
+				jammerUnits = 
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = Decoy Radar Transmitter
+			globalPosition = (110519.689453125, 492.23538208007813, 98589.529083251953)
+			unitInstanceID = 6
+			unitID = eDecoyRadarTransmitter
+			rotation = (-8.645484E-07, 259.4979, -4.663733E-06)
+			spawnChance = 100
+			lastValidPlacement = (110519.689453125, 492.23538208007813, 98589.529083251953)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = False
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = Decoy Radar Transmitter
+			globalPosition = (110443.97216796875, 443.730224609375, 97536.294677734375)
+			unitInstanceID = 7
+			unitID = eDecoyRadarTransmitter
+			rotation = (353.1366, 258.2501, 10.32998)
+			spawnChance = 100
+			lastValidPlacement = (110443.97216796875, 443.730224609375, 97536.294677734375)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = False
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = IRMD Launcher
+			globalPosition = (110544.37744140625, 475.784912109375, 97947.54931640625)
+			unitInstanceID = 8
+			unitID = eIRMDlauncher
+			rotation = (351.3289, 259.2507, 1.639421)
+			spawnChance = 100
+			lastValidPlacement = (110544.37744140625, 475.784912109375, 97947.54931640625)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM Launcher
+			globalPosition = (112700.57421875, 39.21575927734375, 98853.37939453125)
+			unitInstanceID = 9
+			unitID = SamBattery1
+			rotation = (-1.729092E-06, 259.4979, -9.327443E-06)
+			spawnChance = 100
+			lastValidPlacement = (112700.57421875, 39.21575927734375, 98853.37939453125)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 3;
+				allowReload = False
+				reloadTime = 120
+				allowHOJ = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+				equips = FLKM-100;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM Launcher
+			globalPosition = (112676.06201171875, 39.21575927734375, 98952.236877441406)
+			unitInstanceID = 10
+			unitID = SamBattery1
+			rotation = (-1.729092E-06, 259.4979, -9.327443E-06)
+			spawnChance = 100
+			lastValidPlacement = (112676.06201171875, 39.21575927734375, 98952.236877441406)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 3;
+				allowReload = False
+				reloadTime = 120
+				allowHOJ = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+				equips = FLKM-100;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM Launcher
+			globalPosition = (112648.9619140625, 39.2158203125, 99061.530395507813)
+			unitInstanceID = 11
+			unitID = SamBattery1
+			rotation = (-1.729092E-06, 259.4979, -9.327443E-06)
+			spawnChance = 100
+			lastValidPlacement = (112648.9619140625, 39.2158203125, 99061.530395507813)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 3;
+				allowReload = False
+				reloadTime = 120
+				allowHOJ = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = False
+				receiveFriendlyDamage = True
+				equips = FLKM-100;
+			}
+		}
+	}
+	PATHS
+	{
+	}
+	WAYPOINTS
+	{
+		WAYPOINT
+		{
+			id = 0
+			name = Carrier 1
+			globalPoint = (24271.024780273438, -5, 83482.224609375)
+		}
+		WAYPOINT
+		{
+			id = 1
+			name = Carrier 2
+			globalPoint = (23647.879028320313, -5, 56205.333251953125)
+		}
+	}
+	UNITGROUPS
+	{
+	}
+	TimedEventGroups
+	{
+	}
+	TRIGGER_EVENTS
+	{
+	}
+	OBJECTIVES
+	{
+		Objective
+		{
+			objectiveName = Carrier Turn South
+			objectiveInfo = Carrier Turning
+			objectiveID = 0
+			orderID = 0
+			required = False
+			completionReward = 0
+			waypoint = 0
+			autoSetWaypoint = False
+			startMode = Immediate
+			objectiveType = Conditional
+			startEvent
+			{
+				EventInfo
+				{
+					eventName = Start Event
+				}
+			}
+			failEvent
+			{
+				EventInfo
+				{
+					eventName = Failed Event
+				}
+			}
+			completeEvent
+			{
+				EventInfo
+				{
+					eventName = Completed Event
+					EventTarget
+					{
+						targetType = Objective
+						targetID = 1
+						eventName = Reset Objective
+						methodName = ResetObjective
+					}
+					EventTarget
+					{
+						targetType = Objective
+						targetID = 1
+						eventName = Begin Objective
+						methodName = BeginObjective
+					}
+				}
+			}
+			fields
+			{
+				successConditional = 0
+				failConditional = null
+			}
+		}
+		Objective
+		{
+			objectiveName = Carrier Turn North
+			objectiveInfo = 
+			objectiveID = 1
+			orderID = 1
+			required = True
+			completionReward = 0
+			waypoint = null
+			autoSetWaypoint = False
+			startMode = Triggered
+			objectiveType = Destroy
+			startEvent
+			{
+				EventInfo
+				{
+					eventName = Start Event
+				}
+			}
+			failEvent
+			{
+				EventInfo
+				{
+					eventName = Failed Event
+				}
+			}
+			completeEvent
+			{
+				EventInfo
+				{
+					eventName = Completed Event
+					EventTarget
+					{
+						targetType = Objective
+						targetID = 0
+						eventName = Reset Objective
+						methodName = ResetObjective
+					}
+					EventTarget
+					{
+						targetType = Objective
+						targetID = 1
+						eventName = Begin Objective
+						methodName = BeginObjective
+					}
+				}
+			}
+			fields
+			{
+				targets = 
+				minRequired = 1
+				perUnitReward = 0
+				fullCompleteBonus = 0
+			}
+		}
+	}
+	OBJECTIVES_OPFOR
+	{
+	}
+	StaticObjects
+	{
+	}
+	Conditionals
+	{
+		CONDITIONAL
+		{
+			id = 0
+			outputNodePos = (0, 0, 0)
+			root = 1
+			COMP
+			{
+				id = 1
+				type = SCCUnit
+				uiPos = (-399.7703, 38.84014, 0)
+				unit = 0
+				methodName = SCC_NearWaypoint
+				methodParameters = 0;100;
+				isNot = False
+			}
+		}
+	}
+	ConditionalActions
+	{
+	}
+	EventSequences
+	{
+	}
+	BASES
+	{
+	}
+	GlobalValues
+	{
+	}
+	Briefing
+	{
+	}
+}
+
