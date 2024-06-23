@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use std::iter::repeat;
+use std::fmt::Write;
 
 use crate::{parse::Float, Value};
 
@@ -38,111 +39,123 @@ pub fn unparse(v: &Value) -> String {
             _ => unreachable!(),
         };
 
-        s.push_str(&unparse_object(0, k, v));
+        unparse_object(0, k, v, &mut s);
     }
 
     s
 }
 
-fn indent(depth: u32) -> impl Iterator<Item = char> {
-    repeat('\t').take(depth as usize)
+fn indent(depth: u32, output: &mut String) {
+    (0..depth).for_each(|_| {
+        output.write_char('\t').unwrap();
+    });
 }
 
 // number, float, bool, tuple or null
-fn unparse_value(v: &Value) -> Option<String> {
+fn unparse_value(v: &Value, output: &mut String) -> Option<()> {
     match v {
-        Value::Number(v) => Some(v.to_string()),
-        Value::Float(v) => Some(unparse_float(v)),
-        Value::Boolean(v) => Some(if *v { "True" } else { "False" }.to_owned()),
-        Value::Tuple(v) => Some(unparse_tuple(v)),
-        Value::Null => Some(String::new()),
-        Value::String(v) => Some(v.to_owned()),
+        Value::Number(v) => {
+            output.write_fmt(format_args!("{}", v)).unwrap();
+
+            Some(())
+        }
+        Value::Float(v) => {
+            unparse_float(v, output);
+
+            Some(())
+        }
+        Value::Boolean(v) => {
+            if *v {
+                output.write_str("True").unwrap();
+            } else {
+                output.write_str("False").unwrap();
+            }
+
+            Some(())
+        }
+        Value::Tuple(v) => {
+            unparse_tuple(v, output);
+
+            Some(())
+        }
+        Value::Null => Some(()),
+        Value::String(v) => {
+            output.write_str(v).unwrap();
+
+            Some(())
+        }
         _ => None,
     }
 }
 
-fn unparse_float(v: &Float) -> String {
+fn unparse_float(v: &Float, output: &mut String) {
     let Float(v, original) = v;
     if original
         .parse::<f64>()
         .ok()
         .is_some_and(|parsed| parsed.eq(v))
     {
-        return original.clone();
+        output.write_str(original).unwrap();
+    } else {
+        output.write_fmt(format_args!("{}", v)).unwrap();
     }
-
-    v.to_string()
 }
 
-fn unparse_object(indent_depth: u32, k: &str, v: &[(String, Value)]) -> String {
-    let mut s = String::new();
-
-    s.extend(indent(indent_depth));
-    s.push_str(k);
-    s.push('\n');
-    s.extend(indent(indent_depth));
-    s.push('{');
-    s.push('\n');
+fn unparse_object(indent_depth: u32, k: &str, v: &[(String, Value)], output: &mut String) {
+    indent(indent_depth, output);
+    output.write_str(k).unwrap();
+    output.write_char('\n').unwrap();
+    indent(indent_depth, output);
+    output.write_char('{').unwrap();
+    output.write_char('\n').unwrap();
     for (k, v) in v.iter() {
-        if let Some(v) = unparse_value(v) {
-            s.extend(indent(indent_depth + 1));
+        match v {
+            Value::Float(_) | Value::Number(_) | Value::String(_) | Value::Boolean(_) | Value::Tuple(_) | Value::Null => {
+                indent(indent_depth+1, output);
 
-            s.push_str(k);
-            s.push(' ');
-            s.push('=');
-            s.push(' ');
-            s.push_str(&v);
-            s.push('\n')
-        } else {
-            s.push_str(&match v {
-                Value::Object(v) => unparse_object(indent_depth + 1, k, v),
-                Value::Array(v) => unparse_array(indent_depth + 1, k, v),
-                _ => unreachable!(),
-            })
+                output.write_str(k).unwrap();
+                output.write_str(" = ").unwrap();
+
+                unparse_value(v, output);
+                output.write_char('\n').unwrap();
+            },
+            Value::Object(v) => unparse_object(indent_depth + 1, k, v, output),
+            Value::Array(v) => unparse_array(indent_depth + 1, k, v, output),
         }
     }
-    s.extend(indent(indent_depth));
-    s.push('}');
-    s.push('\n');
-
-    s
+    indent(indent_depth, output);
+    output.write_str("}\n").unwrap();
 }
 
-fn unparse_array(indent_depth: u32, k: &str, v: &[(String, Value)]) -> String {
-    let mut s = String::new();
-
-    s.extend(indent(indent_depth));
-    s.push_str(k);
-    s.push('\n');
-    s.extend(indent(indent_depth));
-    s.push('{');
-    s.push('\n');
+fn unparse_array(indent_depth: u32, k: &str, v: &[(String, Value)], output: &mut String) {
+    indent(indent_depth, output);
+    output.write_str(k).unwrap();
+    output.write_char('\n').unwrap();
+    indent(indent_depth, output);
+    output.write_str("{\n").unwrap();
     for (k, v) in v {
-        s.push_str(&match v {
-            Value::Object(v) => unparse_object(indent_depth + 1, k, v),
-            Value::Array(v) => unparse_array(indent_depth + 1, k, v),
+        match v {
+            Value::Object(v) => unparse_object(indent_depth + 1, k, v, output),
+            Value::Array(v) => unparse_array(indent_depth + 1, k, v, output),
             _ => panic!("invalid data"),
-        })
+        }
     }
-    s.extend(indent(indent_depth));
-    s.push('}');
-    s.push('\n');
-
-    s
+    indent(indent_depth, output);
+    output.write_str("}\n").unwrap();
 }
 
-fn unparse_tuple(v: &[Value]) -> String {
-    let mut s = String::new();
-
-    s.push('(');
-    for v in v {
-        s.push_str(&unparse_value(v).unwrap());
-        s.push(',');
-        s.push(' ');
+fn unparse_tuple(v: &[Value], output: &mut String) {
+    output.write_char('(').unwrap();
+    match v.split_last() {
+        Some((last, rest)) => {
+            for v in rest {
+                unparse_value(v, output);
+                output.write_str(", ").unwrap();
+            }
+            unparse_value(last, output);
+        }
+        None => (),
     }
-    s.pop();
-    s.pop();
-    s.push(')');
 
-    s
+    output.write_char(')').unwrap();
 }
