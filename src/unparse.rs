@@ -32,7 +32,7 @@ fn indent(depth: u32) -> impl Iterator<Item = char> {
 fn unparse_value(v: &Value) -> Option<String> {
     match v {
         Value::Number(v) => Some(v.to_string()),
-        Value::Float(v) => Some(v.to_string()),
+        Value::Float(v, original) => Some(if let Some(o) = original { o.clone() } else { v.to_string() }),
         Value::Boolean(v) => Some(if *v { "True"} else {"False"}.to_owned()),
         Value::Tuple(v) => Some(unparse_tuple(v)),
         Value::Null => Some(String::new()),
@@ -108,7 +108,10 @@ fn unparse_tuple(v: &[Value]) -> String {
     for v in v {
         s.push_str(&unparse_value(v).unwrap());
         s.push(',');
+        s.push(' ');
     }
+    s.pop();
+    s.pop();
     s.push(')');
 
     s
