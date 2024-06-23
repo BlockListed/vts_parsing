@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 use std::iter::repeat;
 use std::fmt::Write;
 
-use crate::{parse::{Float, Map, MapMember}, Value};
+use crate::{parse::{Float, Object}, Value};
 
 pub fn unparse(v: &Value) -> String {
     assert!(matches!(v, Value::Object(_)), "top level should be object");
@@ -29,31 +29,14 @@ pub fn unparse(v: &Value) -> String {
 
     let mut s = String::new();
 
-    for (k, v) in v {
-        assert!(
-            matches!(v, MapMember::Vector(_)),
-            "top level children should be objects"
-        );
-        let v = match v {
-            MapMember::Vector(v) => v[0].get_ref(),
-            _ => unreachable!(),
-        };
+    assert_eq!(v.0.len(), 1, "only one top level object allowed");
 
-        let o = match v {
-            Value::Object(o) => o,
-            _ => unreachable!(),
-        };
-
-        unparse_object(0, &k, o, &mut s);
-    }
+    match &v.0[0] {
+        (k, Value::Object(o)) => unparse_object(0, &k, &o, &mut s),
+        _ => panic!("invalid data"),
+    };
 
     s
-}
-
-fn indent(depth: u32, output: &mut String) {
-    (0..depth).for_each(|_| {
-        output.write_char('\t').unwrap();
-    });
 }
 
 // number, float, bool, tuple or null
@@ -106,31 +89,33 @@ fn unparse_float(v: &Float, output: &mut String) {
     }
 }
 
-fn unparse_object(indent_depth: u32, k: &str, v: &Map, output: &mut String) {
+fn indent(depth: u32, output: &mut String) {
+    (0..depth).for_each(|_| {
+        output.write_char('\t').unwrap();
+    });
+}
+
+fn unparse_object(indent_depth: u32, k: &str, v: &Object, output: &mut String) {
     indent(indent_depth, output);
     output.write_str(k).unwrap();
     output.write_char('\n').unwrap();
     indent(indent_depth, output);
     output.write_char('{').unwrap();
     output.write_char('\n').unwrap();
-    for (k, v) in v.iter() {
+    for (k, v) in v.0.iter() {
         match v {
-            MapMember::Scalar(s) => {
+            v if v.is_scalar() => {
                 indent(indent_depth+1, output);
 
                 output.write_str(&k).unwrap();
                 output.write_str(" = ").unwrap();
 
-                unparse_value(s.get_ref(), output);
+                unparse_value(v, output);
                 output.write_char('\n').unwrap();
             },
-            MapMember::Vector(v) => v.into_iter().for_each(|o| {
-                let o = match o.get_ref() {
-                    Value::Object(o) => o,
-                    _ => unreachable!(),
-                };
-                unparse_object(indent_depth + 1, &k, o, output)
-            }),
+            Value::Object(o) => unparse_object(indent_depth + 1, k, o, output),
+            // first case should match everything that isn't an object
+            _ => unreachable!(),
         }
     }
     indent(indent_depth, output);
