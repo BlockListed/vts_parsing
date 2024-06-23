@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+use indexmap::IndexMap;
 use nom::bytes::complete::tag;
 use nom::bytes::complete::take_until;
 use nom::bytes::complete::take_until1;
@@ -23,7 +24,7 @@ use nom::character::complete::multispace0;
 use nom::character::complete::multispace1;
 use nom::character::complete::newline;
 use nom::character::complete::space0;
-use nom::multi::many0;
+use nom::multi::fold_many0;
 use nom::multi::many1;
 use nom::sequence::delimited;
 use nom::sequence::preceded;
@@ -43,11 +44,12 @@ pub enum Value {
     Boolean(bool),
     Tuple(Vec<Value>),
     String(String),
-    Array(Vec<(String, Value)>),
-    /// can't be a map, because object fields can appear twice for some ungodly reason
-    Object(Vec<(String, Value)>),
+    Object(Map),
     Null,
 }
+
+/// `usize` is there, because a map here has to be able to contain the same key twice.
+pub type Map = IndexMap<(String, usize), Value>;
 
 #[derive(Debug, Clone)]
 /// This also includes the original formatting.
@@ -70,18 +72,25 @@ impl PartialEq for Float {
 pub fn parse(vts: &str) -> Value {
     let (title, object) = parse_object(vts).unwrap().1;
 
-    Value::Object(vec![(title.to_string(), object)])
+    Value::Object(IndexMap::from([((title.to_string(), 0), object)]))
 }
 
 fn parse_object(vts: &str) -> IResult<&str, (&str, Value)> {
     let (vts, title) =
         terminated(take_while1(|c: char| c.is_alpha() || c == '_'), multispace1)(vts)?;
 
-    let fields_parser = many1(delimited(
+    let fields_parser = fold_many0(delimited(
         space0,
         parse_object_field.map(|(t, v)| (t.to_owned(), v)),
         newline,
-    ));
+    ),
+    IndexMap::new,
+    |mut acc, (k, v)| {
+            let free_index = (0..usize::MAX).find(|i| acc.get(&(k.clone(), *i)).is_none()).unwrap_or(0);
+            acc.insert((k, free_index), v);
+
+            acc
+        });
 
     let (vts, fields) = delimited(
         terminated(tag("{"), multispace0),
@@ -90,24 +99,6 @@ fn parse_object(vts: &str) -> IResult<&str, (&str, Value)> {
     )(vts)?;
 
     Ok((vts, (title, Value::Object(fields))))
-}
-
-fn parse_array(vts: &str) -> nom::IResult<&str, (&str, Value)> {
-    let (vts, title) =
-        terminated(take_while1(|c: char| c.is_alpha() || c == '_'), multispace1)(vts)?;
-
-    let element_parser = many0(terminated(
-        parse_object.map(|(t, v)| (t.to_owned(), v)),
-        multispace1,
-    ));
-
-    let (vts, elements) = delimited(
-        terminated(tag("{"), multispace0),
-        element_parser,
-        preceded(multispace0, tag("}")),
-    )(vts)?;
-
-    Ok((vts, (title, Value::Array(elements))))
 }
 
 fn parse_value(vts: &str) -> IResult<&str, Value> {
@@ -164,7 +155,7 @@ fn parse_object_field(vts: &str) -> IResult<&str, (&str, Value)> {
         take_until("\n").and_then(parse_value),
     );
 
-    parse_field.or(parse_array).or(parse_object).parse(vts)
+    parse_field.or(parse_object).parse(vts)
 }
 
 #[cfg(test)]

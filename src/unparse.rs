@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 use std::iter::repeat;
 use std::fmt::Write;
 
-use crate::{parse::Float, Value};
+use crate::{parse::{Float, Map}, Value};
 
 pub fn unparse(v: &Value) -> String {
     assert!(matches!(v, Value::Object(_)), "top level should be object");
@@ -39,7 +39,7 @@ pub fn unparse(v: &Value) -> String {
             _ => unreachable!(),
         };
 
-        unparse_object(0, k, v, &mut s);
+        unparse_object(0, &k.0, v, &mut s);
     }
 
     s
@@ -101,7 +101,7 @@ fn unparse_float(v: &Float, output: &mut String) {
     }
 }
 
-fn unparse_object(indent_depth: u32, k: &str, v: &[(String, Value)], output: &mut String) {
+fn unparse_object(indent_depth: u32, k: &str, v: &Map, output: &mut String) {
     indent(indent_depth, output);
     output.write_str(k).unwrap();
     output.write_char('\n').unwrap();
@@ -113,31 +113,13 @@ fn unparse_object(indent_depth: u32, k: &str, v: &[(String, Value)], output: &mu
             Value::Float(_) | Value::Number(_) | Value::String(_) | Value::Boolean(_) | Value::Tuple(_) | Value::Null => {
                 indent(indent_depth+1, output);
 
-                output.write_str(k).unwrap();
+                output.write_str(&k.0).unwrap();
                 output.write_str(" = ").unwrap();
 
                 unparse_value(v, output);
                 output.write_char('\n').unwrap();
             },
-            Value::Object(v) => unparse_object(indent_depth + 1, k, v, output),
-            Value::Array(v) => unparse_array(indent_depth + 1, k, v, output),
-        }
-    }
-    indent(indent_depth, output);
-    output.write_str("}\n").unwrap();
-}
-
-fn unparse_array(indent_depth: u32, k: &str, v: &[(String, Value)], output: &mut String) {
-    indent(indent_depth, output);
-    output.write_str(k).unwrap();
-    output.write_char('\n').unwrap();
-    indent(indent_depth, output);
-    output.write_str("{\n").unwrap();
-    for (k, v) in v {
-        match v {
-            Value::Object(v) => unparse_object(indent_depth + 1, k, v, output),
-            Value::Array(v) => unparse_array(indent_depth + 1, k, v, output),
-            _ => panic!("invalid data"),
+            Value::Object(v) => unparse_object(indent_depth + 1, &k.0, v, output),
         }
     }
     indent(indent_depth, output);
