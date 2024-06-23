@@ -1,4 +1,3 @@
-use indexmap::IndexMap;
 use nom::bytes::complete::tag;
 use nom::bytes::complete::take_until;
 use nom::bytes::complete::take_while1;
@@ -6,7 +5,6 @@ use nom::character::complete::multispace0;
 use nom::character::complete::multispace1;
 use nom::character::complete::newline;
 use nom::character::complete::space0;
-use nom::multi::fold_many1;
 use nom::multi::many0;
 use nom::multi::many1;
 use nom::sequence::delimited;
@@ -26,23 +24,21 @@ pub enum Value {
     Tuple(Vec<Value>),
     String(String),
     Array(Vec<(String, Value)>),
-    Object(IndexMap<String, Value>),
+    // can't be a map, because object fields can appear twice for some ungodly reason
+    Object(Vec<(String, Value)>),
     Null,
 }
 
 pub fn parse(vts: &str) -> Value {
     let (title, object) = parse_object(vts).unwrap().1;
     
-    Value::Object(IndexMap::from([(title.to_owned(), object)]))
+    Value::Object(vec![(title.to_string(), object)])
 }
 
 fn parse_object(vts: &str) -> IResult<&str, (&str, Value)> {
     let (vts, title) = terminated(take_while1(|c: char| c.is_alpha() || c == '_'), multispace1)(vts)?;
 
-    let fields_parser = fold_many1(delimited(space0, parse_object_field, newline), IndexMap::new, |mut map, (key, value)| {
-        map.insert(key.to_owned(), value);
-        map
-    });
+    let fields_parser = many1(delimited(space0, parse_object_field.map(|(t, v)| (t.to_owned(), v)), newline));
 
     let (vts, fields) = delimited(terminated(tag("{"), multispace0), fields_parser, preceded(multispace0, tag("}")))(vts)?;
 
@@ -92,7 +88,7 @@ fn parse_value(vts: &str) -> IResult<&str, Value> {
 fn parse_object_field(vts: &str) -> IResult<&str, (&str, Value)> {
     let parse_field = separated_pair::<_, _, _, _, nom::error::Error<&str>, _, _, _>(take_while1(|c: char| c.is_alpha() || c == '_'), tuple((space0, tag("="), space0)), take_until("\n").and_then(parse_value));
 
-    parse_field.or(parse_object).or(parse_array).parse(vts)
+    parse_field.or(parse_array).or(parse_object).parse(vts)
 }
 
 #[cfg(test)]
