@@ -49,7 +49,101 @@ pub enum Value {
 }
 
 /// `usize` is there, because a map here has to be able to contain the same key twice.
-pub type Map = IndexMap<(String, usize), Value>;
+pub type Map = IndexMap<String, MapMember>;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum MapMember {
+    Scalar(Scalar),
+    Vector(Vec<Vector>),
+}
+
+impl From<Value> for MapMember {
+    fn from(value: Value) -> Self {
+        match Scalar::new(value) {
+            Ok(s) => MapMember::Scalar(s),
+            Err(value) => match Vector::new(value) {
+                Ok(v) => MapMember::Vector(vec![v]),
+                Err(_) => unreachable!(),
+            },
+        }
+    }
+}
+
+/// [Value] which can only appear once in a map
+#[derive(Debug, Clone, PartialEq)]
+pub struct Scalar(Value);
+
+impl Scalar {
+    fn can_store(v: &Value) -> bool {
+        matches!(
+            v,
+            Value::Number(_) | Value::Float(_) | Value::Boolean(_) | Value::Tuple(_) | Value::String(_) | Value::Null
+        )
+    }
+
+    /// Only [Value::Number], [Value::Float], [Value::Boolean], [Value::Tuple] and [Value::Null]
+    /// may be stored in here.
+    pub fn new(value: Value) -> Result<Scalar, Value> {
+        if !Scalar::can_store(&value) {
+            return Err(value);
+        }
+
+        Ok(Scalar(value))
+    }
+
+    pub fn get(self) -> Value {
+        self.0
+    }
+
+    pub fn get_ref(&self) -> &Value {
+        &self.0
+    }
+
+    pub fn set(&mut self, value: Value) -> Result<(), Value> {
+        if !Scalar::can_store(&value) {
+            return Err(value);
+        }
+
+        self.0 = value;
+        Ok(())
+    }
+}
+
+/// [Value] which can appear multiple times in a map
+#[derive(Debug, Clone, PartialEq)]
+pub struct Vector(Value);
+
+impl Vector {
+    fn can_store(v: &Value) -> bool {
+        matches!(v, Value::Object(_))
+    }
+
+    /// Only [Value::Object] may be stored in here.
+    pub fn new(value: Value) -> Result<Vector, Value> {
+        if !Vector::can_store(&value) {
+            return Err(value);
+        }
+
+        Ok(Vector(value))
+    }
+
+    pub fn get(self) -> Value {
+        self.0
+    }
+
+    pub fn get_ref(&self) -> &Value {
+        &self.0
+    }
+
+    pub fn set(&mut self, value: Value) -> Result<(), Value> {
+        if !Scalar::can_store(&value) {
+            return Err(value);
+        }
+
+        self.0 = value;
+        Ok(())
+    }
+}
 
 #[derive(Debug, Clone)]
 /// This also includes the original formatting.
@@ -72,25 +166,50 @@ impl PartialEq for Float {
 pub fn parse(vts: &str) -> Value {
     let (title, object) = parse_object(vts).unwrap().1;
 
-    Value::Object(IndexMap::from([((title.to_string(), 0), object)]))
+    Value::Object(IndexMap::from([(title.to_string(), Value::Object(object).into())]))
 }
 
-fn parse_object(vts: &str) -> IResult<&str, (&str, Value)> {
+fn parse_object(vts: &str) -> IResult<&str, (&str, Map)> {
     let (vts, title) =
         terminated(take_while1(|c: char| c.is_alpha() || c == '_'), multispace1)(vts)?;
 
-    let fields_parser = fold_many0(delimited(
-        space0,
-        parse_object_field.map(|(t, v)| (t.to_owned(), v)),
-        newline,
-    ),
-    IndexMap::new,
-    |mut acc, (k, v)| {
-            let free_index = (0..usize::MAX).find(|i| acc.get(&(k.clone(), *i)).is_none()).unwrap_or(0);
-            acc.insert((k, free_index), v);
+    let fields_parser = fold_many0(
+        delimited(
+            space0,
+            parse_object_field.map(|(t, v)| (t.to_owned(), v)),
+            newline,
+        ),
+        IndexMap::new,
+        |mut acc, (k, v)| {
+            let member = MapMember::from(v);
+
+            match member {
+                MapMember::Scalar(s) => {
+                    acc.insert(k, MapMember::Scalar(s));
+                }
+                MapMember::Vector(mut v) => {
+                    let entry = acc.entry(k);
+
+                    match entry {
+                        indexmap::map::Entry::Vacant(e) => {
+                            e.insert(MapMember::Vector(v));
+                        }
+                        indexmap::map::Entry::Occupied(mut e) => {
+                            let e = e.get_mut();
+                            match e {
+                                MapMember::Vector(v_original) => v_original.append(&mut v),
+                                MapMember::Scalar(_) => {
+                                    *e = MapMember::Vector(v);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             acc
-        });
+        },
+    );
 
     let (vts, fields) = delimited(
         terminated(tag("{"), multispace0),
@@ -98,7 +217,7 @@ fn parse_object(vts: &str) -> IResult<&str, (&str, Value)> {
         preceded(multispace0, tag("}")),
     )(vts)?;
 
-    Ok((vts, (title, Value::Object(fields))))
+    Ok((vts, (title, fields)))
 }
 
 fn parse_value(vts: &str) -> IResult<&str, Value> {
@@ -155,7 +274,7 @@ fn parse_object_field(vts: &str) -> IResult<&str, (&str, Value)> {
         take_until("\n").and_then(parse_value),
     );
 
-    parse_field.or(parse_object).parse(vts)
+    parse_field.or(parse_object.map(|(k, v)| (k, Value::Object(v)))).parse(vts)
 }
 
 #[cfg(test)]

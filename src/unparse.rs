@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 use std::iter::repeat;
 use std::fmt::Write;
 
-use crate::{parse::{Float, Map}, Value};
+use crate::{parse::{Float, Map, MapMember}, Value};
 
 pub fn unparse(v: &Value) -> String {
     assert!(matches!(v, Value::Object(_)), "top level should be object");
@@ -31,15 +31,20 @@ pub fn unparse(v: &Value) -> String {
 
     for (k, v) in v {
         assert!(
-            matches!(v, Value::Object(_)),
+            matches!(v, MapMember::Vector(_)),
             "top level children should be objects"
         );
         let v = match v {
-            Value::Object(v) => v,
+            MapMember::Vector(v) => v[0].get_ref(),
             _ => unreachable!(),
         };
 
-        unparse_object(0, &k.0, v, &mut s);
+        let o = match v {
+            Value::Object(o) => o,
+            _ => unreachable!(),
+        };
+
+        unparse_object(0, &k, o, &mut s);
     }
 
     s
@@ -110,16 +115,22 @@ fn unparse_object(indent_depth: u32, k: &str, v: &Map, output: &mut String) {
     output.write_char('\n').unwrap();
     for (k, v) in v.iter() {
         match v {
-            Value::Float(_) | Value::Number(_) | Value::String(_) | Value::Boolean(_) | Value::Tuple(_) | Value::Null => {
+            MapMember::Scalar(s) => {
                 indent(indent_depth+1, output);
 
-                output.write_str(&k.0).unwrap();
+                output.write_str(&k).unwrap();
                 output.write_str(" = ").unwrap();
 
-                unparse_value(v, output);
+                unparse_value(s.get_ref(), output);
                 output.write_char('\n').unwrap();
             },
-            Value::Object(v) => unparse_object(indent_depth + 1, &k.0, v, output),
+            MapMember::Vector(v) => v.into_iter().for_each(|o| {
+                let o = match o.get_ref() {
+                    Value::Object(o) => o,
+                    _ => unreachable!(),
+                };
+                unparse_object(indent_depth + 1, &k, o, output)
+            }),
         }
     }
     indent(indent_depth, output);
