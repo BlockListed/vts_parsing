@@ -74,7 +74,49 @@ impl Value {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Object(pub Vec<(String, Value)>);
+pub struct Object(Vec<(String, Value)>);
+
+impl Object {
+    pub fn new(v: Vec<(String, Value)>) -> Object {
+        Object(v)
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &(String, Value)> {
+        self.0.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut (String, Value)> {
+        self.0.iter_mut()
+    }
+
+    pub fn get(&self, k: &str) -> Option<&Value> {
+        self.iter().find(|(key, _)| key == k).map(|(_, v)| v)
+    }
+
+    pub fn get_mut(&mut self, k: &str) -> Option<&mut Value> {
+        self.iter_mut().find(|(key, _)| key == k).map(|(_, v)| v)
+    }
+
+    /// This will either replace the value of the first kv pair found or if not, insert a new one.
+    /// Returns true if we inserted a new value.
+    pub fn set(&mut self, k: &str, v: Value) -> bool {
+        match self.get_mut(k) {
+            Some(old_v) => {
+                *old_v = v;
+                false
+            },
+            None => {
+                self.insert(k.to_owned(), v);
+                true
+            }
+        }
+    }
+
+    /// This will insert a new kv pair to the end of the object
+    pub fn insert(&mut self, k: String, v: Value) {
+        self.0.push((k, v));
+    }
+}
 
 #[derive(Debug, Clone)]
 /// This also includes the original formatting.
