@@ -74,7 +74,7 @@ impl Value {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Object(Vec<(String, Value)>);
+pub struct Object(pub(crate) Vec<(String, Value)>);
 
 impl Object {
     pub fn new(v: Vec<(String, Value)>) -> Object {
