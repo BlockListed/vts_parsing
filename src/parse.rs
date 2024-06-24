@@ -49,9 +49,27 @@ pub enum Value {
 }
 
 impl Value {
+    /// Any value which can be put after the equals sign in an object.
     pub fn is_scalar(&self) -> bool {
         use Value::*;
         matches!(self, Number(_) | Float(_) | Boolean(_) | Tuple(_) | String(_) | Null)
+    }
+
+    /// An array is an object, whose children are only objects, which all have the same key / name.
+    pub fn is_array(&self) -> bool {
+        match self {
+            Value::Object(Object(o)) => {
+                o.iter().fold((true, None), |(acc, name), (k, v)| match v {
+                    Value::Object(_) => match name {
+                        Some(n) if n == k => (acc, name),
+                        None => (acc, Some(k)),
+                        _ => (false, None),
+                    },
+                    _ => (false, None),
+                }).0
+            },
+            _ => false,
+        } 
     }
 }
 
