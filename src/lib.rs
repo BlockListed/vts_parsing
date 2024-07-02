@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 pub mod parse;
 pub mod unparse;
 
-pub use parse::{parse, Value};
+pub use parse::{parse, Value, Node};
 pub use unparse::unparse;
 
 #[cfg(test)]
