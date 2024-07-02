@@ -45,8 +45,8 @@ impl<'a> Display for UnparseValue<'a> {
                     f.write_str("False")?;
                 }
             }
-            Value::Tuple(ref v) => {
-                unparse_tuple(v, f)?;
+            Value::Vector(ref v) => {
+                unparse_vector(v, f)?;
             }
             Value::Null => (),
             Value::String(v) => {
@@ -73,15 +73,15 @@ fn unparse_float(v: &Float, f: &mut Formatter) -> std::fmt::Result {
     Ok(())
 }
 
-fn unparse_tuple(v: &[Value], f: &mut Formatter) -> std::fmt::Result {
+fn unparse_vector(v: &[Float; 3], f: &mut Formatter) -> std::fmt::Result {
     f.write_char('(')?;
     match v.split_last() {
         Some((last, rest)) => {
             for v in rest {
-                UnparseValue(v).fmt(f)?;
+                unparse_float(v, f)?;
                 f.write_str(", ").unwrap();
             }
-            UnparseValue(last).fmt(f)?;
+            unparse_float(last, f)?;
         }
         None => (),
     }

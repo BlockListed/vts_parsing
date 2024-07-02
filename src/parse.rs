@@ -15,19 +15,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-use std::collections::HashMap;
+use std::num::ParseFloatError;
 
 use indexmap::IndexMap;
 use nom::bytes::complete::tag;
 use nom::bytes::complete::take_until;
-use nom::bytes::complete::take_until1;
 use nom::bytes::complete::take_while1;
 use nom::character::complete::multispace0;
 use nom::character::complete::multispace1;
 use nom::character::complete::newline;
 use nom::character::complete::space0;
+use nom::combinator::map_res;
+use nom::error::make_error;
 use nom::multi::many0;
-use nom::multi::many1;
+use nom::multi::separated_list1;
+use nom::number::streaming::recognize_float;
 use nom::sequence::delimited;
 use nom::sequence::preceded;
 use nom::sequence::separated_pair;
@@ -44,7 +46,7 @@ pub enum Value {
     /// little as possible. You don't need to worry about that though.
     Float(Float),
     Boolean(bool),
-    Tuple(Vec<Value>),
+    Vector([Float; 3]),
     String(String),
     Null,
 }
@@ -55,7 +57,6 @@ pub struct Node {
     pub values: IndexMap<String, Value>,
     pub nodes: Vec<Node>,
 }
-
 
 impl Node {
     pub fn new(name: String, values: IndexMap<String, Value>, nodes: Vec<Node>) -> Node {
@@ -106,20 +107,18 @@ pub fn parse(vts: &str) -> Node {
 }
 
 fn parse_node(vts: &str) -> IResult<&str, Node> {
-    let (vts, title) =
-        terminated(take_while1(|c: char| c.is_alpha() || c == '_'), multispace1)(vts)?;
+    let (vts, title) = terminated(
+        take_while1(|c: char| c.is_alphanum() || c == '_'),
+        multispace1,
+    )(vts)?;
 
-    let fields_parser = many0(
-        delimited(
-            space0,
-            parse_node_value.map(|(t, v)| (t.to_owned(), v)),
-            newline,
-        ),
-    );
+    let fields_parser = many0(delimited(
+        space0,
+        parse_node_value.map(|(t, v)| (t.to_owned(), v)),
+        newline,
+    ));
 
-    let nodes_parser = many0(
-        delimited(space0, parse_node, newline)
-    );
+    let nodes_parser = many0(delimited(space0, parse_node, newline));
 
     let (vts, (values, nodes)) = delimited(
         terminated(tag("{"), multispace0),
@@ -127,11 +126,14 @@ fn parse_node(vts: &str) -> IResult<&str, Node> {
         preceded(multispace0, tag("}")),
     )(vts)?;
 
-    Ok((vts, Node {
-        name: title.to_string(),
-        values: values.into_iter().collect(),
-        nodes,
-    }))
+    Ok((
+        vts,
+        Node {
+            name: title.to_string(),
+            values: values.into_iter().collect(),
+            nodes,
+        },
+    ))
 }
 
 fn parse_value(vts: &str) -> IResult<&str, Value> {
@@ -154,7 +156,7 @@ fn parse_value(vts: &str) -> IResult<&str, Value> {
         })
         .map(|v| ("", v))
         // tuple
-        .or_else(|| parse_tuple(vts).ok())
+        .or_else(|| parse_vector.map(Value::Vector).parse(vts).ok())
         .or_else(|| {
             if vts.is_empty() {
                 return Some(("", Value::Null));
@@ -166,24 +168,43 @@ fn parse_value(vts: &str) -> IResult<&str, Value> {
         .unwrap_or_else(|| ("", Value::String(vts.to_owned()))))
 }
 
-fn parse_tuple(vts: &str) -> IResult<&str, Value> {
-    let tuple_elems = many1(terminated(
-        take_until1(",").and_then(parse_value),
-        tuple((tag(","), space0)),
-    ))
-    .and(take_until1(")").and_then(parse_value));
+fn parse_vector(vts: &str) -> IResult<&str, [Float; 3]> {
+    let (should_be_empty, v) = delimited(
+        tag("("),
+        separated_list1(
+            tuple((tag(","), space0)),
+            map_res(recognize_float, |f: &str| {
+                Ok::<_, ParseFloatError>(Float(f.parse::<f64>()?, f.to_string()))
+            }),
+        ),
+        tag(")"),
+    )(vts)?;
 
-    delimited(terminated(tag("("), space0), tuple_elems, tag(")"))(vts).map(
-        |(vts, (mut before, rest))| {
-            before.push(rest);
-            (vts, Value::Tuple(before))
-        },
-    )
+    if !should_be_empty.is_empty() {
+        return Err(nom::Err::Error(make_error(
+            vts,
+            nom::error::ErrorKind::NonEmpty,
+        )));
+    }
+
+    if v.len() != 3 {
+        return Err(nom::Err::Error(make_error(
+            vts,
+            nom::error::ErrorKind::Count,
+        )));
+    }
+
+    let mut i = v.into_iter();
+
+    Ok((
+        should_be_empty,
+        [i.next().unwrap(), i.next().unwrap(), i.next().unwrap()],
+    ))
 }
 
 fn parse_node_value(vts: &str) -> IResult<&str, (&str, Value)> {
     separated_pair(
-        take_while1(|c: char| c.is_alpha() || c == '_'),
+        take_while1(|c: char| c.is_alphanum() || c == '_'),
         tuple((space0, tag("="), space0)),
         take_until("\n").and_then(parse_value),
     )(vts)
@@ -192,9 +213,8 @@ fn parse_node_value(vts: &str) -> IResult<&str, (&str, Value)> {
 #[cfg(test)]
 mod testing {
     use super::parse;
-    use super::parse_tuple;
+    use super::parse_vector;
     use super::Float;
-    use super::Value;
 
     const TEST_STR: &str = include_str!("../amogus testing.vts");
 
@@ -206,15 +226,27 @@ mod testing {
     #[test]
     fn test_tuple() {
         assert_eq!(
-            parse_tuple("(-234.3, 5, 403.3)"),
+            parse_vector("(-234.3, 5, 403.3)"),
             Ok((
                 "",
-                Value::Tuple(vec![
-                    Value::Float(Float(-234.3, "-234.3".into())),
-                    Value::Number(5),
-                    Value::Float(Float(403.3, "403.3".into()))
-                ])
+                [
+                    Float(-234.3, "-234.3".into()),
+                    Float(5.0, "5".into()),
+                    Float(403.3, "403.3".into()),
+                ]
             ))
-        )
+        );
+    }
+
+    #[test]
+    fn test_tuple_no_parse() {
+        let vts = "(5.0, 5.0, 5.0);(5.0, 5.0, 5.0);";
+        assert_eq!(
+            parse_vector(vts),
+            Err(nom::Err::Error(nom::error::make_error(
+                vts,
+                nom::error::ErrorKind::NonEmpty
+            ))),
+        );
     }
 }
