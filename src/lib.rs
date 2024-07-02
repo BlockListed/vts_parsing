@@ -1,7 +1,7 @@
 pub mod parse;
 pub mod unparse;
 
-pub use parse::{parse, Value, Node};
+pub use parse::{parse, Value, Node, Float};
 pub use unparse::unparse;
 
 #[cfg(test)]
