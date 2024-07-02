@@ -15,6 +15,8 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+use std::collections::HashMap;
+
 use indexmap::IndexMap;
 use nom::bytes::complete::tag;
 use nom::bytes::complete::take_until;
@@ -44,77 +46,40 @@ pub enum Value {
     Boolean(bool),
     Tuple(Vec<Value>),
     String(String),
-    Object(Object),
     Null,
 }
 
-impl Value {
-    /// Any value which can be put after the equals sign in an object.
-    pub fn is_scalar(&self) -> bool {
-        use Value::*;
-        matches!(self, Number(_) | Float(_) | Boolean(_) | Tuple(_) | String(_) | Null)
-    }
-
-    /// An array is an object, whose children are only objects, which all have the same key / name.
-    pub fn is_array(&self) -> bool {
-        match self {
-            Value::Object(Object(o)) => {
-                o.iter().fold((true, None), |(acc, name), (k, v)| match v {
-                    Value::Object(_) => match name {
-                        Some(n) if n == k => (acc, name),
-                        None => (acc, Some(k)),
-                        _ => (false, None),
-                    },
-                    _ => (false, None),
-                }).0
-            },
-            _ => false,
-        } 
-    }
+#[derive(Debug, Clone, PartialEq)]
+pub struct Node {
+    pub name: String,
+    pub values: IndexMap<String, Value>,
+    pub nodes: Vec<Node>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct Object(pub(crate) Vec<(String, Value)>);
 
-impl Object {
-    pub fn new(v: Vec<(String, Value)>) -> Object {
-        Object(v)
-    }
-
-    pub fn iter(&self) -> impl Iterator<Item = &(String, Value)> {
-        self.0.iter()
-    }
-
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut (String, Value)> {
-        self.0.iter_mut()
-    }
-
-    pub fn get(&self, k: &str) -> Option<&Value> {
-        self.iter().find(|(key, _)| key == k).map(|(_, v)| v)
-    }
-
-    pub fn get_mut(&mut self, k: &str) -> Option<&mut Value> {
-        self.iter_mut().find(|(key, _)| key == k).map(|(_, v)| v)
-    }
-
-    /// This will either replace the value of the first kv pair found or if not, insert a new one.
-    /// Returns true if we inserted a new value.
-    pub fn set(&mut self, k: &str, v: Value) -> bool {
-        match self.get_mut(k) {
-            Some(old_v) => {
-                *old_v = v;
-                false
-            },
-            None => {
-                self.insert(k.to_owned(), v);
-                true
-            }
+impl Node {
+    pub fn new(name: String, values: IndexMap<String, Value>, nodes: Vec<Node>) -> Node {
+        Node {
+            name,
+            values,
+            nodes,
         }
     }
 
-    /// This will insert a new kv pair to the end of the object
-    pub fn insert(&mut self, k: String, v: Value) {
-        self.0.push((k, v));
+    pub fn nodes(&self) -> impl Iterator<Item = &Node> {
+        self.nodes.iter()
+    }
+
+    pub fn nodes_mut(&mut self) -> impl Iterator<Item = &mut Node> {
+        self.nodes.iter_mut()
+    }
+
+    pub fn get_node(&self, k: &str) -> Option<&Node> {
+        self.nodes().find(|n| n.name == k)
+    }
+
+    pub fn get_node_mut(&mut self, k: &str) -> Option<&mut Node> {
+        self.nodes_mut().find(|n| n.name == k)
     }
 }
 
@@ -136,31 +101,37 @@ impl PartialEq for Float {
     }
 }
 
-pub fn parse(vts: &str) -> Value {
-    let (title, object) = parse_object(vts).unwrap().1;
-
-    Value::Object(Object(vec![(title.to_string(), Value::Object(object))]))
+pub fn parse(vts: &str) -> Node {
+    parse_node(vts).unwrap().1
 }
 
-fn parse_object(vts: &str) -> IResult<&str, (&str, Object)> {
+fn parse_node(vts: &str) -> IResult<&str, Node> {
     let (vts, title) =
         terminated(take_while1(|c: char| c.is_alpha() || c == '_'), multispace1)(vts)?;
 
     let fields_parser = many0(
         delimited(
             space0,
-            parse_object_field.map(|(t, v)| (t.to_owned(), v)),
+            parse_node_value.map(|(t, v)| (t.to_owned(), v)),
             newline,
         ),
     );
 
-    let (vts, fields) = delimited(
+    let nodes_parser = many0(
+        delimited(space0, parse_node, newline)
+    );
+
+    let (vts, (values, nodes)) = delimited(
         terminated(tag("{"), multispace0),
-        fields_parser,
+        tuple((fields_parser, nodes_parser)),
         preceded(multispace0, tag("}")),
     )(vts)?;
 
-    Ok((vts, (title, Object(fields))))
+    Ok((vts, Node {
+        name: title.to_string(),
+        values: values.into_iter().collect(),
+        nodes,
+    }))
 }
 
 fn parse_value(vts: &str) -> IResult<&str, Value> {
@@ -210,14 +181,12 @@ fn parse_tuple(vts: &str) -> IResult<&str, Value> {
     )
 }
 
-fn parse_object_field(vts: &str) -> IResult<&str, (&str, Value)> {
-    let parse_field = separated_pair::<_, _, _, _, nom::error::Error<&str>, _, _, _>(
+fn parse_node_value(vts: &str) -> IResult<&str, (&str, Value)> {
+    separated_pair(
         take_while1(|c: char| c.is_alpha() || c == '_'),
         tuple((space0, tag("="), space0)),
         take_until("\n").and_then(parse_value),
-    );
-
-    parse_field.or(parse_object.map(|(k, v)| (k, Value::Object(v)))).parse(vts)
+    )(vts)
 }
 
 #[cfg(test)]

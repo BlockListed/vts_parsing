@@ -15,78 +15,80 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-use std::iter::repeat;
-use std::fmt::Write;
+use std::fmt::{Display, Formatter, Write};
 
-use crate::{parse::{Float, Object}, Value};
+use crate::{parse::{Float, Node}, Value};
 
-pub fn unparse(v: &Value) -> String {
-    assert!(matches!(v, Value::Object(_)), "top level should be object");
-    let v = match v {
-        Value::Object(v) => v,
-        _ => unreachable!(),
-    };
-
+pub fn unparse(v: &Node) -> String {
     let mut s = String::new();
-
-    assert_eq!(v.0.len(), 1, "only one top level object allowed");
-
-    match &v.0[0] {
-        (k, Value::Object(o)) => unparse_object(0, &k, &o, &mut s),
-        _ => panic!("invalid data"),
-    };
+    
+    unparse_node(v, 0, &mut s);
 
     s
 }
 
-// number, float, bool, tuple or null
-fn unparse_value(v: &Value, output: &mut String) -> Option<()> {
-    match v {
-        Value::Number(v) => {
-            output.write_fmt(format_args!("{}", v)).unwrap();
+struct UnparseValue<'a>(&'a Value);
 
-            Some(())
-        }
-        Value::Float(v) => {
-            unparse_float(v, output);
-
-            Some(())
-        }
-        Value::Boolean(v) => {
-            if *v {
-                output.write_str("True").unwrap();
-            } else {
-                output.write_str("False").unwrap();
+impl<'a> Display for UnparseValue<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.0 {
+            Value::Number(v) => {
+                f.write_fmt(format_args!("{}", v))?;
             }
+            Value::Float(ref v) => {
+                unparse_float(v, f)?;
+            }
+            Value::Boolean(v) => {
+                if *v {
+                    f.write_str("True")?;
+                } else {
+                    f.write_str("False")?;
+                }
+            }
+            Value::Tuple(ref v) => {
+                unparse_tuple(v, f)?;
+            }
+            Value::Null => (),
+            Value::String(v) => {
+                f.write_str(v)?;
+            }
+        };
 
-            Some(())
-        }
-        Value::Tuple(v) => {
-            unparse_tuple(v, output);
-
-            Some(())
-        }
-        Value::Null => Some(()),
-        Value::String(v) => {
-            output.write_str(v).unwrap();
-
-            Some(())
-        }
-        _ => None,
+        Ok(())
     }
 }
 
-fn unparse_float(v: &Float, output: &mut String) {
+fn unparse_float(v: &Float, f: &mut Formatter) -> std::fmt::Result {
     let Float(v, original) = v;
     if original
         .parse::<f64>()
         .ok()
         .is_some_and(|parsed| parsed.eq(v))
     {
-        output.write_str(original).unwrap();
+        f.write_str(original)?;
     } else {
-        output.write_fmt(format_args!("{}", v)).unwrap();
+        f.write_fmt(format_args!("{}", v))?;
     }
+
+    Ok(())
+}
+
+fn unparse_tuple(v: &[Value], f: &mut Formatter) -> std::fmt::Result {
+    f.write_char('(')?;
+    match v.split_last() {
+        Some((last, rest)) => {
+            for v in rest {
+                UnparseValue(v).fmt(f)?;
+                f.write_str(", ").unwrap();
+            }
+            UnparseValue(last).fmt(f)?;
+        }
+        None => (),
+    }
+
+    f.write_char(')')?;
+
+    Ok(())
 }
 
 fn indent(depth: u32, output: &mut String) {
@@ -95,45 +97,19 @@ fn indent(depth: u32, output: &mut String) {
     });
 }
 
-fn unparse_object(indent_depth: u32, k: &str, v: &Object, output: &mut String) {
+fn unparse_node(node: &Node, indent_depth: u32, output: &mut String) {
     indent(indent_depth, output);
-    output.write_str(k).unwrap();
+    output.write_str(&node.name).unwrap();
     output.write_char('\n').unwrap();
     indent(indent_depth, output);
-    output.write_char('{').unwrap();
-    output.write_char('\n').unwrap();
-    for (k, v) in v.0.iter() {
-        match v {
-            v if v.is_scalar() => {
-                indent(indent_depth+1, output);
-
-                output.write_str(&k).unwrap();
-                output.write_str(" = ").unwrap();
-
-                unparse_value(v, output);
-                output.write_char('\n').unwrap();
-            },
-            Value::Object(o) => unparse_object(indent_depth + 1, k, o, output),
-            // first case should match everything that isn't an object
-            _ => unreachable!(),
-        }
+    output.write_str("{\n").unwrap();
+    for (k, v) in node.values.iter() {
+        indent(indent_depth+1, output);
+        output.write_fmt(format_args!("{} = {}\n", k, UnparseValue(v))).unwrap();
+    }
+    for n in node.nodes() {
+        unparse_node(n, indent_depth+1, output);
     }
     indent(indent_depth, output);
     output.write_str("}\n").unwrap();
-}
-
-fn unparse_tuple(v: &[Value], output: &mut String) {
-    output.write_char('(').unwrap();
-    match v.split_last() {
-        Some((last, rest)) => {
-            for v in rest {
-                unparse_value(v, output);
-                output.write_str(", ").unwrap();
-            }
-            unparse_value(last, output);
-        }
-        None => (),
-    }
-
-    output.write_char(')').unwrap();
 }
