@@ -1,0 +1,1078 @@
+CustomScenario
+{
+	gameVersion = 1.10.1f1
+	campaignID = Refueling Practice
+	campaignOrderIdx = 1
+	scenarioName = SEAD / MISSILE EVASION PRACTICE
+	scenarioID = SAM Missile Evasion Practice
+	scenarioDescription = Practice your SEAD / Missile evasion against an extremely protect sam system
+	mapID = costaOeste
+	vehicle = AV-42C
+	multiplayer = True
+	allowedEquips = gau-8;m230;h70-x7;h70-4x4;h70-x19;mk82x1;mk82x2;mk82x3;mk82HDx1;mk82HDx2;mk82HDx3;agm89x1;gbu38x1;gbu38x2;gbu38x3;gbu39x3;gbu39x4u;cbu97x1;hellfirex4;maverickx1;maverickx3;cagm-6;sidewinderx1;sidewinderx2;sidewinderx3;iris-t-x1;iris-t-x2;iris-t-x3;sidearmx1;sidearmx2;sidearmx3;marmx1;av42_gbu12x1;av42_gbu12x2;av42_gbu12x3;42c_aim9ex2;42c_aim9ex1;
+	forceEquips = False
+	normForcedFuel = 1
+	equipsConfigurable = True
+	baseBudget = 200000
+	isTraining = False
+	rtbWptID = 
+	refuelWptID = 
+	mpPlayerCount = 3
+	autoPlayerCount = True
+	overrideAlliedPlayerCount = 0
+	overrideEnemyPlayerCount = 0
+	scorePerDeath_A = 0
+	scorePerDeath_B = 0
+	scorePerKill_A = 0
+	scorePerKill_B = 0
+	mpBudgetMode = Life
+	rtbWptID_B = 
+	refuelWptID_B = 
+	separateBriefings = False
+	baseBudgetB = 100000
+	infiniteAmmo = False
+	infAmmoReloadDelay = 5
+	fuelDrainMult = 1
+	envName = day
+	selectableEnv = False
+	windDir = 0
+	windSpeed = 0
+	windVariation = 0
+	windGusts = 0
+	defaultWeather = 0
+	customTimeOfDay = 11
+	overrideLocation = False
+	overrideLatitude = 26.4
+	overrideLongitude = 0
+	month = 1
+	day = 1
+	year = 2024
+	timeOfDaySpeed = 1
+	qsMode = Anywhere
+	qsLimit = -1
+	WEATHER_PRESETS
+	{
+	}
+	UNITS
+	{
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 RDR
+			globalPosition = (95127.21484375, 277.6473388671875, 72291.755126953125)
+			unitInstanceID = 0
+			unitID = MAD-4Radar
+			rotation = (1.500444E-07, 270.9063, -9.485206E-06)
+			spawnChance = 100
+			lastValidPlacement = (95127.21484375, 277.6473388671875, 72291.755126953125)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 L-1
+			globalPosition = (97363.29736328125, 63.058837890625, 74402.973876953125)
+			unitInstanceID = 1
+			unitID = MAD-4Launcher
+			rotation = (-3.860047E-06, 245.9894, -8.665506E-06)
+			spawnChance = 100
+			lastValidPlacement = (97363.29736328125, 63.058837890625, 74402.973876953125)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 0;
+				allowReload = True
+				reloadTime = 120
+				allowHOJ = True
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = MAD-4A Missile;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 L-2
+			globalPosition = (97390.79296875, 63.05889892578125, 74337.205200195313)
+			unitInstanceID = 2
+			unitID = MAD-4Launcher
+			rotation = (-1.930028E-06, 245.9894, -4.332764E-06)
+			spawnChance = 100
+			lastValidPlacement = (97390.79296875, 63.05889892578125, 74337.205200195313)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 0;
+				allowReload = True
+				reloadTime = 120
+				allowHOJ = True
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = MAD-4A Missile;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 L-3
+			globalPosition = (97415.55859375, 63.05889892578125, 74281.3115234375)
+			unitInstanceID = 3
+			unitID = MAD-4Launcher
+			rotation = (-1.930028E-06, 245.9894, -4.332764E-06)
+			spawnChance = 100
+			lastValidPlacement = (97415.55859375, 63.05889892578125, 74281.3115234375)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 0;
+				allowReload = True
+				reloadTime = 120
+				allowHOJ = True
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = MAD-4A Missile;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 L-4
+			globalPosition = (97442.8515625, 63.05889892578125, 74219.7138671875)
+			unitInstanceID = 4
+			unitID = MAD-4Launcher
+			rotation = (-1.930028E-06, 245.9894, -4.332764E-06)
+			spawnChance = 100
+			lastValidPlacement = (97442.8515625, 63.05889892578125, 74219.7138671875)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 0;
+				allowReload = True
+				reloadTime = 120
+				allowHOJ = True
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = MAD-4A Missile;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 MW
+			globalPosition = (95142.110595703125, 277.6473388671875, 72214.128540039063)
+			unitInstanceID = 5
+			unitID = EMWSTruck
+			rotation = (-3.860062E-06, 245.9894, -8.665538E-06)
+			spawnChance = 100
+			lastValidPlacement = (95142.110595703125, 277.6473388671875, 72214.128540039063)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 0;
+				decoyUnits = 6;7;
+				unitsToDefend = 10;1;2;3;4;
+				defenseUnits = 8;16;17;
+				jammerUnits = 9;
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 DCY-1
+			globalPosition = (95312.44841003418, 277.6473388671875, 72212.904663085938)
+			unitInstanceID = 6
+			unitID = eDecoyRadarTransmitter
+			rotation = (-3.860062E-06, 245.9894, -8.665538E-06)
+			spawnChance = 100
+			lastValidPlacement = (95312.44841003418, 277.6473388671875, 72212.904663085938)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = False
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 DCY-2
+			globalPosition = (95269.010314941406, 276.52685546875, 72352.817260742188)
+			unitInstanceID = 7
+			unitID = eDecoyRadarTransmitter
+			rotation = (356.457, 246.4924, 351.9139)
+			spawnChance = 100
+			lastValidPlacement = (95269.010314941406, 276.52685546875, 72352.817260742188)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = False
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 IRMD-1
+			globalPosition = (95205.75146484375, 277.6474609375, 72269.845581054688)
+			unitInstanceID = 8
+			unitID = eIRMDlauncher
+			rotation = (-3.860062E-06, 245.9894, -8.665538E-06)
+			spawnChance = 100
+			lastValidPlacement = (95205.75146484375, 277.6474609375, 72269.845581054688)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 JMR-1
+			globalPosition = (95384.230834960938, 277.6474609375, 72323.109741210938)
+			unitInstanceID = 9
+			unitID = EJammerTruck
+			rotation = (-3.860062E-06, 245.9894, -8.665538E-06)
+			spawnChance = 100
+			lastValidPlacement = (95384.230834960938, 277.6474609375, 72323.109741210938)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				engageEnemies = False
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 SW-1
+			globalPosition = (95402.96989440918, 278.21746063232422, 72234.493530273438)
+			unitInstanceID = 10
+			unitID = SAAW
+			rotation = (-1.930026E-06, 245.9894, -4.332759E-06)
+			spawnChance = 100
+			lastValidPlacement = (95402.96989440918, 278.21746063232422, 72234.493530273438)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				stopToEngage = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = RESPAWN TENT
+			globalPosition = (47348.50732421875, 134.58837890625, 72663.202026367188)
+			unitInstanceID = 11
+			unitID = cylinderTent
+			rotation = (-2.359157E-07, 267.149, -4.737311E-06)
+			spawnChance = 100
+			lastValidPlacement = (47348.50732421875, 134.58837890625, 72663.202026367188)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = False
+				detectionMode = Force_Detected
+				spawnOnStart = False
+				invincible = False
+				combatTarget = True
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = F-45
+			globalPosition = (39116.90625, 8197, 74344.512817382813)
+			unitInstanceID = 12
+			unitID = MultiplayerSpawn
+			rotation = (0, 90.92082, 0)
+			spawnChance = 100
+			lastValidPlacement = (39116.90625, 8197, 74344.512817382813)
+			editorPlacementMode = Air
+			spawnFlags = 
+			UnitFields
+			{
+				vehicle = F-45A
+				slotLabel = F-45
+				unitGroup = null
+				startMode = FlightReady
+				equipment = 
+				initialSpeed = 450
+				rtbIsSpawn = False
+				limitedLives = False
+				lifeCount = 1
+				b_eqAssignmentMode = True
+				costToSpawn = 0
+				liveryRef = 0;
+				receiveFriendlyDamage = True
+				forcedEquipsList = f45_gun;f45-agm145ISide;f45_harmSDx2;f45_harmSDx2;f45_sidewinderx2;;f45_harmSDx1;f45_harmSDx1;f45_harmSDx1;f45_harmSDx1;;|
+			}
+		}
+		UnitSpawner
+		{
+			unitName = EF-24G
+			globalPosition = (39117.283843994141, 8197, 74378.233856201172)
+			unitInstanceID = 13
+			unitID = MultiplayerSpawn
+			rotation = (0, 90.92082, 0)
+			spawnChance = 100
+			lastValidPlacement = (39117.283843994141, 8197, 74378.233856201172)
+			editorPlacementMode = Air
+			spawnFlags = 
+			UnitFields
+			{
+				vehicle = EF-24G
+				slotLabel = EF-24G
+				unitGroup = null
+				startMode = FlightReady
+				equipment = 
+				initialSpeed = 450
+				rtbIsSpawn = False
+				limitedLives = False
+				lifeCount = 1
+				b_eqAssignmentMode = True
+				costToSpawn = 0
+				liveryRef = 0;
+				receiveFriendlyDamage = True
+				slots = 2
+				forcedEquipsList = ef24_gun;ef24_harmSDx1;ef24_harmSDx1;ef24_harmSDx1;ef24_harmSDx1;ef24_harmSDx1;ef24_harmSDx1;ef24_jammerSuper;ef24_harmSDx1;ef24_harmSDx1;ef24_jammerSuper;ef24_droptank;ef24_droptank;ef24_tgp;|
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 IRMD-2
+			globalPosition = (95238.077407836914, 277.6473388671875, 72197.891723632813)
+			unitInstanceID = 16
+			unitID = eIRMDlauncher
+			rotation = (8.258776E-08, 270.4988, -9.486032E-06)
+			spawnChance = 100
+			lastValidPlacement = (95238.077407836914, 277.6473388671875, 72197.891723632813)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP 4-1 IRMD-3
+			globalPosition = (95193.39892578125, 277.6474609375, 72338.911254882813)
+			unitInstanceID = 17
+			unitID = eIRMDlauncher
+			rotation = (-2.425355E-06, 255.1869, -9.17111E-06)
+			spawnChance = 100
+			lastValidPlacement = (95193.39892578125, 277.6474609375, 72338.911254882813)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SHORAD-1
+			globalPosition = (88742.0986328125, 302.06048583984375, 85258.33837890625)
+			unitInstanceID = 18
+			unitID = SAAW
+			rotation = (-1.212679E-06, 255.1869, -4.585563E-06)
+			spawnChance = 100
+			lastValidPlacement = (88742.0986328125, 302.06048583984375, 85258.33837890625)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				stopToEngage = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP D-1 RDR
+			globalPosition = (63710.457763671875, 468.392333984375, 63647.98095703125)
+			unitInstanceID = 19
+			unitID = SamFCR2
+			rotation = (4.553749E-06, 298.6874, -8.32194E-06)
+			spawnChance = 100
+			lastValidPlacement = (63710.457763671875, 468.392333984375, 63647.98095703125)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP D-1 L-1
+			globalPosition = (65819.2080078125, 39.21575927734375, 61941.714904785156)
+			unitInstanceID = 20
+			unitID = SamBattery1
+			rotation = (4.553741E-06, 298.6874, -8.321922E-06)
+			spawnChance = 100
+			lastValidPlacement = (65819.2080078125, 39.21575927734375, 61941.714904785156)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 19;
+				allowReload = False
+				reloadTime = 120
+				allowHOJ = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = BSM-66;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP D-1 L-2
+			globalPosition = (65805.1484375, 39.21575927734375, 61917.043762207031)
+			unitInstanceID = 21
+			unitID = SamBattery1
+			rotation = (4.553741E-06, 298.6874, -8.321922E-06)
+			spawnChance = 100
+			lastValidPlacement = (65805.1484375, 39.21575927734375, 61917.043762207031)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 19;
+				allowReload = False
+				reloadTime = 120
+				allowHOJ = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = BSM-66;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SHORAD-2
+			globalPosition = (84421.742431640625, 468.96234130859375, 95966.509155273438)
+			unitInstanceID = 22
+			unitID = SAAW
+			rotation = (-2.465126E-06, 238.6866, -4.052285E-06)
+			spawnChance = 100
+			lastValidPlacement = (84421.742431640625, 468.96234130859375, 95966.509155273438)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				stopToEngage = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP D-2 L-1
+			globalPosition = (100977.80590820313, 635.294677734375, 91997.984130859375)
+			unitInstanceID = 23
+			unitID = SamBattery1
+			rotation = (-4.930258E-06, 238.6866, -8.104578E-06)
+			spawnChance = 100
+			lastValidPlacement = (100977.80590820313, 635.294677734375, 91997.984130859375)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 25;
+				allowReload = False
+				reloadTime = 120
+				allowHOJ = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = ASM-66LR;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP D-2 L-2
+			globalPosition = (100985.64306640625, 635.294677734375, 91972.387451171875)
+			unitInstanceID = 24
+			unitID = SamBattery1
+			rotation = (-4.930258E-06, 238.6866, -8.104578E-06)
+			spawnChance = 100
+			lastValidPlacement = (100985.64306640625, 635.294677734375, 91972.387451171875)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				radarUnits = 25;
+				allowReload = False
+				reloadTime = 120
+				allowHOJ = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+				equips = ASM-66LR;
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SAM GROUP D-2 RDR
+			globalPosition = (100187.98693847656, 730.667236328125, 92040.72607421875)
+			unitInstanceID = 25
+			unitID = SamFCR2
+			rotation = (-2.345234E-06, 255.6868, -9.191887E-06)
+			spawnChance = 100
+			lastValidPlacement = (100187.98693847656, 730.667236328125, 92040.72607421875)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+		UnitSpawner
+		{
+			unitName = SHORAD-3
+			globalPosition = (86101.583679199219, 63.628868103027344, 74174.241271972656)
+			unitInstanceID = 26
+			unitID = SAAW
+			rotation = (-2.286542E-06, 256.0524, -9.206699E-06)
+			spawnChance = 100
+			lastValidPlacement = (86101.583679199219, 63.628868103027344, 74174.241271972656)
+			editorPlacementMode = Ground
+			spawnFlags = 
+			UnitFields
+			{
+				unitGroup = null
+				moveSpeed = Slow_10
+				behavior = Parked
+				defaultPath = null
+				waypoint = null
+				stopToEngage = True
+				engageEnemies = True
+				detectionMode = Default
+				spawnOnStart = True
+				invincible = False
+				respawnable = True
+				receiveFriendlyDamage = True
+			}
+		}
+	}
+	PATHS
+	{
+	}
+	WAYPOINTS
+	{
+	}
+	UNITGROUPS
+	{
+	}
+	TimedEventGroups
+	{
+	}
+	TRIGGER_EVENTS
+	{
+	}
+	OBJECTIVES
+	{
+	}
+	OBJECTIVES_OPFOR
+	{
+	}
+	StaticObjects
+	{
+	}
+	Conditionals
+	{
+		CONDITIONAL
+		{
+			id = 0
+			outputNodePos = (-13.85184, 97.16592, 0)
+			root = 1
+			COMP
+			{
+				id = 0
+				type = SCCUnit
+				uiPos = (-508, 330, 0)
+				unit = 0
+				methodName = SC_IsAlive
+				methodParameters = null
+				isNot = True
+			}
+			COMP
+			{
+				id = 1
+				type = SCCAnd
+				uiPos = (-185, 159, 0)
+				factors = 0;2;3;
+			}
+			COMP
+			{
+				id = 2
+				type = SCCUnit
+				uiPos = (-508.7041, 190.7273, 0)
+				unit = 19
+				methodName = SC_IsAlive
+				methodParameters = null
+				isNot = True
+			}
+			COMP
+			{
+				id = 3
+				type = SCCUnit
+				uiPos = (-515.3066, 44.82428, 0)
+				unit = 25
+				methodName = SC_IsAlive
+				methodParameters = null
+				isNot = True
+			}
+		}
+		CONDITIONAL
+		{
+			id = 2
+			outputNodePos = (-26.22505, 54.46742, 0)
+			root = 0
+			COMP
+			{
+				id = 0
+				type = SCCUnit
+				uiPos = (-413.2432, 101.1866, 0)
+				unit = 11
+				methodName = SCC_GetsKilled
+				methodParameters = null
+				isNot = False
+			}
+		}
+	}
+	ConditionalActions
+	{
+	}
+	EventSequences
+	{
+		SEQUENCE
+		{
+			id = 0
+			sequenceName = DESTROYING SAMS
+			startImmediately = True
+			whileLoop = False
+			EVENT
+			{
+				conditional = 0
+				delay = 0
+				nodeName = SAM NETWORK DISABLED
+				EventInfo
+				{
+					eventName = 
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 11
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = System
+						targetID = 1
+						eventName = Display Message Team
+						methodName = DisplayMessageTeam
+						ParamInfo
+						{
+							type = System.String
+							value = SAM Network destroyed.///nDestroy the tent on the coast///nto respawn SAM network.
+							name = Text
+							ParamAttrInfo
+							{
+								type = TextInputModes
+								data = MultiLine
+							}
+							ParamAttrInfo
+							{
+								type = System.Int32
+								data = 140
+							}
+						}
+						ParamInfo
+						{
+							type = System.Single
+							value = 5
+							name = Duration
+							ParamAttrInfo
+							{
+								type = MinMax
+								data = (1,9999)
+							}
+						}
+						ParamInfo
+						{
+							type = Teams
+							value = Allied
+							name = Team
+						}
+					}
+				}
+			}
+			EVENT
+			{
+				conditional = 2
+				delay = 0
+				nodeName = RESPAWN SAM NETWORK
+				EventInfo
+				{
+					eventName = 
+					EventTarget
+					{
+						targetType = Event_Sequences
+						targetID = 0
+						eventName = Restart
+						methodName = Restart
+					}
+					EventTarget
+					{
+						targetType = Event_Sequences
+						targetID = 1
+						eventName = Restart
+						methodName = Restart
+					}
+				}
+			}
+		}
+		SEQUENCE
+		{
+			id = 1
+			sequenceName = RESPAWN ALL
+			startImmediately = False
+			whileLoop = False
+			EVENT
+			{
+				delay = 0
+				nodeName = RESPAWN ALL
+				EventInfo
+				{
+					eventName = 
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 0
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 1
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 2
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 3
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 4
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 5
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 6
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 7
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 8
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 9
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 10
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 16
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 17
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 19
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 20
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 21
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 25
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 23
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 24
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 26
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 18
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+					EventTarget
+					{
+						targetType = Unit
+						targetID = 22
+						eventName = Spawn Unit
+						methodName = SpawnUnit
+					}
+				}
+			}
+		}
+	}
+	BASES
+	{
+		BaseInfo
+		{
+			id = 32
+			overrideBaseName = 
+			baseTeam = Allied
+			CUSTOM_DATA
+			{
+			}
+		}
+	}
+	GlobalValues
+	{
+	}
+	Briefing
+	{
+	}
+	Briefing_B
+	{
+	}
+}
+

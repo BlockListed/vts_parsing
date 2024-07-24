@@ -23,9 +23,9 @@ use nom::bytes::complete::take_until;
 use nom::bytes::complete::take_while1;
 use nom::character::complete::multispace0;
 use nom::character::complete::multispace1;
-use nom::character::complete::newline;
 use nom::character::complete::space0;
 use nom::combinator::map_res;
+use nom::error::context;
 use nom::error::make_error;
 use nom::multi::many0;
 use nom::multi::separated_list1;
@@ -109,19 +109,19 @@ pub fn parse(vts: &str) -> Node {
 fn parse_node(vts: &str) -> IResult<&str, Node> {
     let (vts, title) = terminated(
         take_while1(|c: char| c.is_alphanum() || c == '_'),
-        multispace1,
+        multispace0,
     )(vts)?;
 
     let fields_parser = many0(delimited(
         space0,
         parse_node_value.map(|(t, v)| (t.to_owned(), v)),
-        newline,
+        multispace1,
     ));
 
-    let nodes_parser = many0(delimited(space0, parse_node, newline));
+    let nodes_parser = many0(delimited(multispace0, parse_node, multispace0));
 
     let (vts, (values, nodes)) = delimited(
-        terminated(tag("{"), multispace0),
+        tuple((tag("{"), multispace0)),
         tuple((fields_parser, nodes_parser)),
         preceded(multispace0, tag("}")),
     )(vts)?;
@@ -205,8 +205,8 @@ fn parse_vector(vts: &str) -> IResult<&str, [Float; 3]> {
 fn parse_node_value(vts: &str) -> IResult<&str, (&str, Value)> {
     separated_pair(
         take_while1(|c: char| c.is_alphanum() || c == '_'),
-        tuple((space0, tag("="), space0)),
-        take_until("\n").and_then(parse_value),
+        tuple((space0, context("expected equals while parsing value", tag("=")), space0)),
+        take_until("\r\n").or(take_until("\n")).and_then(parse_value),
     )(vts)
 }
 
@@ -218,9 +218,16 @@ mod testing {
 
     const TEST_STR: &str = include_str!("../amogus testing.vts");
 
+    const SAM_EVASION_PARSE: &str = include_str!("../SAM Missile Evasion Practice.vts");
+
     #[test]
     fn test_parse() {
-        eprintln!("{:#?}", parse(TEST_STR))
+        eprintln!("{:#?}", parse(TEST_STR));
+    }
+
+    #[test]
+    fn sam_evasion_parse() {
+        eprintln!("{:#?}", parse(SAM_EVASION_PARSE));
     }
 
     #[test]
