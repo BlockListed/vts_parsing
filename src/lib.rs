@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 pub mod parse;
 pub mod unparse;
 
-pub use parse::{parse, Value, Node, Float};
+pub use parse::{parse, Value, Node};
 pub use unparse::unparse;
 
 #[cfg(test)]
@@ -29,9 +29,9 @@ mod testing {
 
     #[test]
     fn full_test() {
-        let left = TEST_STR;
-        let right = &super::unparse(&super::parse(TEST_STR));
-        eprintln!("{right}");
+        let left = super::parse(TEST_STR);
+        let right = super::parse(&super::unparse(&left));
+        eprintln!("{left:?}");
         assert_eq!(left, right);
     }
 }

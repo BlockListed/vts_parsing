@@ -15,38 +15,26 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-use std::num::ParseFloatError;
+use std::char;
 
 use indexmap::IndexMap;
-use nom::bytes::complete::tag;
-use nom::bytes::complete::take_until;
-use nom::bytes::complete::take_while1;
-use nom::character::complete::multispace0;
-use nom::character::complete::multispace1;
-use nom::character::complete::space0;
-use nom::combinator::map_res;
-use nom::error::context;
-use nom::error::make_error;
-use nom::multi::many0;
-use nom::multi::separated_list1;
-use nom::number::streaming::recognize_float;
-use nom::sequence::delimited;
-use nom::sequence::preceded;
-use nom::sequence::separated_pair;
-use nom::sequence::terminated;
-use nom::sequence::tuple;
-use nom::AsChar;
-use nom::IResult;
-use nom::Parser;
+use nom::branch::alt;
+use nom::bytes::complete::{tag, take_while1};
+use nom::character::complete::{char, i64, line_ending, multispace0, not_line_ending, space0};
+use nom::combinator::{opt, value};
+use nom::error::{context, convert_error, ContextError, ParseError};
+use nom::multi::{many0, many1, many_m_n};
+use nom::number::complete::double;
+use nom::sequence::{delimited, pair, separated_pair, terminated, tuple};
+use nom::{IResult, Parser};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Number(i64),
-    /// This also includes the original formatting of the float, so that we change the file as
-    /// little as possible. You don't need to worry about that though.
-    Float(Float),
+    Float(f64),
     Boolean(bool),
-    Vector([Float; 3]),
+    Vector([f64; 3]),
+    VectorGroup(Vec<[f64; 3]>),
     String(String),
     Null,
 }
@@ -84,137 +72,137 @@ impl Node {
     }
 }
 
-#[derive(Debug, Clone)]
-/// This also includes the original formatting.
-/// If modified, this will automatically serialize the new value, instead of the saved original.
-/// Basically just treat this as a float.
-pub struct Float(pub f64, pub(crate) String);
-
-impl Float {
-    pub fn new(v: f64) -> Float {
-        Float(v, String::new())
-    }
-}
-
-impl PartialEq for Float {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.eq(&other.0)
-    }
-}
-
 pub fn parse(vts: &str) -> Node {
-    parse_node(vts).unwrap().1
+    let res = parse_node::<nom::error::VerboseError<&str>>(vts).map_err(|e| match e {
+        nom::Err::Error(e) | nom::Err::Failure(e) => convert_error(vts, e),
+        _ => e.to_string(),
+    });
+
+    match res {
+        Ok((_, n)) => n,
+        Err(e) => {
+            eprintln!("{e}");
+            Err::<(), _>(e).unwrap();
+            unreachable!();
+        }
+    }
 }
 
-fn parse_node(vts: &str) -> IResult<&str, Node> {
-    let (vts, title) = terminated(
-        take_while1(|c: char| c.is_alphanum() || c == '_'),
-        multispace0,
+fn parse_bool<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, bool, E> {
+    let true_parser = value(true, tag("True"));
+    let false_parser = value(false, tag("False"));
+
+    alt((true_parser, false_parser))(vts)
+}
+
+fn parse_number<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, i64, E> {
+    i64(vts)
+}
+
+fn parse_float<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, f64, E> {
+    double(vts)
+}
+
+fn parse_vector<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
+    vts: &'a str,
+) -> IResult<&'a str, [f64; 3], E> {
+    let (vts, components) = context(
+        "vector",
+        delimited(
+            char('('),
+            many_m_n(3, 3, terminated(parse_float, opt(pair(char(','), space0)))),
+            char(')'),
+        ),
     )(vts)?;
 
-    let fields_parser = many0(delimited(
-        space0,
-        parse_node_value.map(|(t, v)| (t.to_owned(), v)),
-        multispace1,
-    ));
+    assert_eq!(components.len(), 3, "many_m_n should guarantee length");
 
-    let nodes_parser = many0(delimited(multispace0, parse_node, multispace0));
+    Ok((
+        vts,
+        components
+            .try_into()
+            .expect("this should never error we are guaranteed to be the correct length"),
+    ))
+}
 
-    let (vts, (values, nodes)) = delimited(
-        tuple((tag("{"), multispace0)),
-        tuple((fields_parser, nodes_parser)),
-        preceded(multispace0, tag("}")),
+fn parse_vectorgroup<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
+    vts: &'a str,
+) -> IResult<&'a str, Vec<[f64; 3]>, E> {
+    context(
+        "vector_group",
+        many1(terminated(parse_vector, opt(pair(char(';'), space0)))),
+    )(vts)
+}
+
+fn parse_null<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, (), E> {
+    space0.map(|_| ()).parse(vts)
+}
+
+fn parse_value<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
+    vts: &'a str,
+) -> IResult<&'a str, Value, E> {
+    context(
+        "value",
+        alt((
+            terminated(parse_null, line_ending).map(|()| Value::Null),
+            terminated(parse_number, line_ending).map(|n| Value::Number(n)),
+            terminated(parse_float, line_ending).map(|f| Value::Float(f)),
+            terminated(parse_bool, line_ending).map(|b| Value::Boolean(b)),
+            terminated(parse_vector, line_ending).map(|v| Value::Vector(v)),
+            terminated(parse_vectorgroup, line_ending).map(|vg| Value::VectorGroup(vg)),
+            terminated(not_line_ending, line_ending).map(|s: &str| Value::String(s.into())),
+        )),
+    )(vts)
+}
+
+fn parse_name<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, &'a str, E> {
+    take_while1(|c: char| c.is_alphanumeric() || c == '_' || c == '-')(vts)
+}
+
+fn parse_kv<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
+    vts: &'a str,
+) -> IResult<&'a str, (&'a str, Value), E> {
+    context(
+        "kv",
+        separated_pair(parse_name, tuple((space0, char('='), space0)), parse_value),
+    )(vts)
+}
+
+fn parse_node<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
+    vts: &'a str,
+) -> IResult<&'a str, Node, E> {
+    let values = many0(terminated(parse_kv, multispace0));
+    let nodes = many0(terminated(parse_node, multispace0));
+
+    let (vts, (name, (values, nodes))) = context(
+        "node",
+        pair(
+            terminated(parse_name, multispace0),
+            delimited(
+                pair(char('{'), multispace0),
+                tuple((values, nodes)),
+                char('}'),
+            ),
+        ),
     )(vts)?;
 
     Ok((
         vts,
         Node {
-            name: title.to_string(),
-            values: values.into_iter().collect(),
+            name: name.to_string(),
+            values: values
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v))
+                .collect(),
             nodes,
         },
     ))
-}
-
-fn parse_value(vts: &str) -> IResult<&str, Value> {
-    // number first
-    Ok(vts
-        .parse::<i64>()
-        .ok()
-        .map(Value::Number)
-        // float
-        .or_else(|| {
-            vts.parse::<f64>()
-                .map(|v| Value::Float(Float(v, vts.to_owned())))
-                .ok()
-        })
-        // boolean
-        .or(match vts {
-            "True" => Some(Value::Boolean(true)),
-            "False" => Some(Value::Boolean(false)),
-            _ => None,
-        })
-        .map(|v| ("", v))
-        // tuple
-        .or_else(|| parse_vector.map(Value::Vector).parse(vts).ok())
-        .or_else(|| {
-            if vts.is_empty() {
-                return Some(("", Value::Null));
-            }
-
-            None
-        })
-        // string
-        .unwrap_or_else(|| ("", Value::String(vts.to_owned()))))
-}
-
-fn parse_vector(vts: &str) -> IResult<&str, [Float; 3]> {
-    let (should_be_empty, v) = delimited(
-        tag("("),
-        separated_list1(
-            tuple((tag(","), space0)),
-            map_res(recognize_float, |f: &str| {
-                Ok::<_, ParseFloatError>(Float(f.parse::<f64>()?, f.to_string()))
-            }),
-        ),
-        tag(")"),
-    )(vts)?;
-
-    if !should_be_empty.is_empty() {
-        return Err(nom::Err::Error(make_error(
-            vts,
-            nom::error::ErrorKind::NonEmpty,
-        )));
-    }
-
-    if v.len() != 3 {
-        return Err(nom::Err::Error(make_error(
-            vts,
-            nom::error::ErrorKind::Count,
-        )));
-    }
-
-    let mut i = v.into_iter();
-
-    Ok((
-        should_be_empty,
-        [i.next().unwrap(), i.next().unwrap(), i.next().unwrap()],
-    ))
-}
-
-fn parse_node_value(vts: &str) -> IResult<&str, (&str, Value)> {
-    separated_pair(
-        take_while1(|c: char| c.is_alphanum() || c == '_'),
-        tuple((space0, context("expected equals while parsing value", tag("=")), space0)),
-        take_until("\r\n").or(take_until("\n")).and_then(parse_value),
-    )(vts)
 }
 
 #[cfg(test)]
 mod testing {
     use super::parse;
     use super::parse_vector;
-    use super::Float;
 
     const TEST_STR: &str = include_str!("../amogus testing.vts");
 
@@ -233,27 +221,8 @@ mod testing {
     #[test]
     fn test_tuple() {
         assert_eq!(
-            parse_vector("(-234.3, 5, 403.3)"),
-            Ok((
-                "",
-                [
-                    Float(-234.3, "-234.3".into()),
-                    Float(5.0, "5".into()),
-                    Float(403.3, "403.3".into()),
-                ]
-            ))
-        );
-    }
-
-    #[test]
-    fn test_tuple_no_parse() {
-        let vts = "(5.0, 5.0, 5.0);(5.0, 5.0, 5.0);";
-        assert_eq!(
-            parse_vector(vts),
-            Err(nom::Err::Error(nom::error::make_error(
-                vts,
-                nom::error::ErrorKind::NonEmpty
-            ))),
+            parse_vector::<nom::error::Error<&str>>("(-234.3, 5, 403.3)"),
+            Ok(("", [-234.3, 5.0, 403.3,]))
         );
     }
 }

@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 use std::fmt::{Display, Formatter, Write};
 
-use crate::{parse::{Float, Node}, Value};
+use crate::{parse::Node, Value};
 
 pub fn unparse(v: &Node) -> String {
     let mut s = String::new();
@@ -36,7 +36,7 @@ impl<'a> Display for UnparseValue<'a> {
                 f.write_fmt(format_args!("{}", v))?;
             }
             Value::Float(ref v) => {
-                unparse_float(v, f)?;
+                f.write_fmt(format_args!("{}", v))?;
             }
             Value::Boolean(v) => {
                 if *v {
@@ -48,6 +48,9 @@ impl<'a> Display for UnparseValue<'a> {
             Value::Vector(ref v) => {
                 unparse_vector(v, f)?;
             }
+            Value::VectorGroup(ref v) => {
+                unparse_vectorgroup(v, f)?;
+            }
             Value::Null => (),
             Value::String(v) => {
                 f.write_str(v)?;
@@ -58,35 +61,29 @@ impl<'a> Display for UnparseValue<'a> {
     }
 }
 
-fn unparse_float(v: &Float, f: &mut Formatter) -> std::fmt::Result {
-    let Float(v, original) = v;
-    if original
-        .parse::<f64>()
-        .ok()
-        .is_some_and(|parsed| parsed.eq(v))
-    {
-        f.write_str(original)?;
-    } else {
-        f.write_fmt(format_args!("{}", v))?;
-    }
-
-    Ok(())
-}
-
-fn unparse_vector(v: &[Float; 3], f: &mut Formatter) -> std::fmt::Result {
+fn unparse_vector(v: &[f64; 3], f: &mut Formatter) -> std::fmt::Result {
     f.write_char('(')?;
     match v.split_last() {
         Some((last, rest)) => {
             for v in rest {
-                unparse_float(v, f)?;
-                f.write_str(", ").unwrap();
+                f.write_fmt(format_args!("{}", v))?;
+                f.write_str(", ")?;
             }
-            unparse_float(last, f)?;
+            f.write_fmt(format_args!("{}", last))?;
         }
         None => (),
     }
 
     f.write_char(')')?;
+
+    Ok(())
+}
+
+fn unparse_vectorgroup(v: &[[f64; 3]], f: &mut Formatter) -> std::fmt::Result {
+    for vector in v {
+        unparse_vector(vector, f)?;
+        f.write_char(';')?;
+    }
 
     Ok(())
 }
@@ -100,16 +97,16 @@ fn indent(depth: u32, output: &mut String) {
 fn unparse_node(node: &Node, indent_depth: u32, output: &mut String) {
     indent(indent_depth, output);
     output.write_str(&node.name).unwrap();
-    output.write_char('\n').unwrap();
+    output.write_str("\r\n").unwrap();
     indent(indent_depth, output);
-    output.write_str("{\n").unwrap();
+    output.write_str("{\r\n").unwrap();
     for (k, v) in node.values.iter() {
         indent(indent_depth+1, output);
-        output.write_fmt(format_args!("{} = {}\n", k, UnparseValue(v))).unwrap();
+        output.write_fmt(format_args!("{} = {}\r\n", k, UnparseValue(v))).unwrap();
     }
     for n in node.nodes() {
         unparse_node(n, indent_depth+1, output);
     }
     indent(indent_depth, output);
-    output.write_str("}\n").unwrap();
+    output.write_str("}\r\n").unwrap();
 }
