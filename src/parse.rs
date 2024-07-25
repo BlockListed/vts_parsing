@@ -138,6 +138,11 @@ fn parse_null<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, (), 
     space0.map(|_| ()).parse(vts)
 }
 
+fn parse_string<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, &'a str, E> {
+    // a string is literally anything that's not a line ending
+    not_line_ending(vts)
+}
+
 fn parse_value<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
     vts: &'a str,
 ) -> IResult<&'a str, Value, E> {
@@ -150,7 +155,7 @@ fn parse_value<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
             terminated(parse_bool, line_ending).map(|b| Value::Boolean(b)),
             terminated(parse_vector, line_ending).map(|v| Value::Vector(v)),
             terminated(parse_vectorgroup, line_ending).map(|vg| Value::VectorGroup(vg)),
-            terminated(not_line_ending, line_ending).map(|s: &str| Value::String(s.into())),
+            terminated(parse_string, line_ending).map(|s: &str| Value::String(s.into())),
         )),
     )(vts)
 }
