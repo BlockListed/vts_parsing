@@ -94,19 +94,26 @@ fn indent(depth: u32, output: &mut String) {
     });
 }
 
+fn newline(output: &mut String) {
+    output.write_char('\n').unwrap();
+}
+
 fn unparse_node(node: &Node, indent_depth: u32, output: &mut String) {
     indent(indent_depth, output);
     output.write_str(&node.name).unwrap();
-    output.write_str("\r\n").unwrap();
+    newline(output);
     indent(indent_depth, output);
-    output.write_str("{\r\n").unwrap();
+    output.write_char('{').unwrap();
+    newline(output);
     for (k, v) in node.values.iter() {
         indent(indent_depth+1, output);
-        output.write_fmt(format_args!("{} = {}\r\n", k, UnparseValue(v))).unwrap();
+        output.write_fmt(format_args!("{} = {}", k, UnparseValue(v))).unwrap();
+        newline(output);
     }
     for n in node.nodes() {
         unparse_node(n, indent_depth+1, output);
     }
     indent(indent_depth, output);
-    output.write_str("}\r\n").unwrap();
+    output.write_char('}').unwrap();
+    newline(output);
 }
