@@ -1,0 +1,5 @@
+Briefing {
+    BRIEFING_NOTE {
+        {text} = {It's amogin time.}
+    } 
+}
