@@ -144,7 +144,15 @@ fn parse_value<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
 }
 
 fn parse_name<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, &'a str, E> {
-    take_while1(|c: char| c.is_alphanumeric() || c == '_' || c == '-')(vts)
+    let allowed_special = &[
+        '_',
+        '-',
+        // these two are here because of briefings
+        '{',
+        '}',
+    ];
+
+    take_while1(|c: char| c.is_alphanumeric() || allowed_special.contains(&c))(vts)
 }
 
 fn parse_kv<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
@@ -196,6 +204,10 @@ mod testing {
 
     const NAVAL_TEST_LAKE_PARSE: &str = include_str!("../StrikeOnNavalTestLake.vts");
 
+    // here because the kv-pair keys contain weird characters
+    // which used to cause issues.
+    const BREAD_BRIEFING: &str = include_str!("../Bread_Line_Briefing.vts");
+
     #[test]
     fn test_parse() {
         eprintln!("{:#?}", parse(TEST_STR));
@@ -207,10 +219,16 @@ mod testing {
     }
 
     #[test]
+    fn test_bread_briefing() {
+        eprintln!("{:#?}", parse(BREAD_BRIEFING));
+    }
+
+    #[test]
     fn test_tuple() {
         assert_eq!(
             parse_vector::<nom::error::Error<&str>>("(-234.3, 5, 403.3)"),
             Ok(("", [-234.3, 5.0, 403.3,]))
         );
     }
+
 }

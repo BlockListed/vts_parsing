@@ -1,0 +1,111 @@
+Briefing
+{
+    BRIEFING_NOTE
+    {
+        text = Executive Summary:///nThe battle for Kaliningrad was not the sweep that we’d hoped for - even with the success of air and maritime operations. On the ground both sides, consisting of troops heavily attrited and exhausted after 6 months of nonstop combat, fought to a standstill. With our failure to open a new axis in this war, it’s clear that the conflict cannot last forever.
+        imagePath = 
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Instead of pressing for a decisive victory on the ground, NATO command has decided on the strategy of striking strategic Russian assets to force a favorable position at the negotiating table. In pursuit of this goal, CSG-12 has been deployed to the Arctic Sea and positioned just North of the critical Russian port city of Murmansk.
+        imagePath = 
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Battle Plan:///nOur primary objective is to destroy four Russian strategic assets at Murmansk - BAGEL, MUFFIN, PITA, and NAAN. Our secondary objective is the destruction of GECM trucks.///n///nRye - Strike - x4 F/A-26B///nOat - Strike - x2 F-45A///nBrioche - Escort Rye/TARCAP - x2 F-45A///nSourdough - DEAD/Strike - x2 EF-24G///nWheat - BARCAP - x4 F/A-26B
+        imagePath = caw\breadline\breadline1.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = All aircraft will rally at the rally point. Sourdough and Wheat will push first. Rye, Oat, and Brioche will push 3 minutes afterwards.
+        imagePath = caw\breadline\breadline1.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Rye:///nRye’s first objective is to strike the Polyarny naval base and its submarine pens (BAGEL). BAGEL consists of approximately 16x shipyard, hardened, and softskin buildings. Each building should be engaged with a GBU-12.
+        imagePath = caw\breadline\breadline2.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = After the destruction of BAGEL, Rye is to strike all ships, shipyard, and supporting assets at the Saif naval base (MUFFIN). Each fixed structure is to receive a Mk.82 bomb, while each parked ship is to receive a Mk.83 bomb.
+        imagePath = 
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Brioche:///nBrioche’s sole objective is the defense of Rye flight as they complete their strike objectives. Brioche will push slightly ahead of Rye and act as both DEAD against SHORAD as well as last-line TARCAP.///nExpect a plethora of SAAW, IRAPC, and AAA units stationed both at and around both of Rye’s strike targets. SHORAD should be primarily engaged with AGM-145.
+        imagePath = caw\breadline\breadline2.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Brioche’s AGM-88S’ are intended for backup use against long-range SAM sites. Should there be any left, they can be employed against SAAWs.
+        imagePath = caw\breadline\breadline2.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Oat:///nOat’s primary objective is the destruction of all assets at the Russian Northern fleet headquarters (PITA). All buildings attached to PITA are to receive a GBU-53 bomb. Any parked ships should be dispatched with a Mk.83 bomb. Expect some scattered IRAPCs and SAAWs defending PITA.
+        imagePath = 
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Once complete, Oat will proceed to their secondary strike objective of Russian government offices scattered throughout Murmansk city (NAAN). These offices, marked by bunkers, have been flagged as possible locations of high ranking Russian military and government officials. Each should receive a GBU-12.
+        imagePath = caw\breadline\breadline2.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Sourdough:///nSourdough’s primary objective is the suppression and destruction of long range SAM sites defending Murmansk. Expect at least 4x MAD-4A and 6x FLKM-100. Should you need assistance on DEAD, contact Brioche flight.
+        imagePath = caw\breadline\breadline3.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Once complete, Sourdough will hunt down and destroy GECM trucks scattered across the Russian countryside surrounding Murmansk. Each GECM will be destroyed with a GBU-12. During and after this, Sourdough should be providing general EW support to the package.
+        imagePath = caw\breadline\breadline3.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Wheat:///nWheat is to establish BARCAP approximately 15nmi South of bullseye. Focus should be on preventing enemy aircraft from crossing the BARCAP line.///n///nShould enemy aircraft break through, contact Brioche flight. Their position on TARCAP with Rye flight should allow them to protect the package from intruding Russian aircraft.
+        imagePath = caw\breadline\breadline4.PNG
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        {text} = {Weather:///nCASE 1 conditions expected for our departure with CASE 3 recoveries expected later on. Winds should remain relatively calm with ceilings >8,500’.}
+        imagePath = caw\breadline\weatherBREADLINE_.png
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Remarks:///nBRIOCHE: If the objective isn’t yet safe for Rye to push in, call off their attack. It’s okay to ask for some extra time to clean up SHORAD.///n///nA tanker is on station to the North for refuelling.
+        imagePath = 
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Threat Summary:///nx6+ FLKM-100///nx4+ MAD-4///nx6+ SAAW///nx16+ Fighters///nIRAPCs///nMANPADS
+        imagePath = 
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Comms Plan:///nMarshal - 132.4///nPaddles - 227.5///nICLS - 104.4///n///nDEAD/CAP INITIAL - 250.0///nRYE/BRIOCHE - 255.0///nTANKER - 275.5///n///nSTRIKE - TEAM///nFLIGHT COMMS - Discord VC
+        imagePath = 
+        audioClipPath = 
+    }
+    BRIEFING_NOTE
+    {
+        text = Please rise for the national anthem...
+        imagePath = caw\usaflag.png
+        audioClipPath = 
+    }
+}
