@@ -77,11 +77,28 @@ impl Value {
         }
     }
 
+    #[cfg(feature = "glam")]
+    pub fn as_glam_vector(&self) -> Option<glam::f64::DVec3> {
+        let v = self.as_vector()?;
+
+        Some(glam::f64::DVec3::new(v[0], v[1], v[2]))
+    }
+
     pub fn as_vectorgroup(&self) -> Option<&[[f64; 3]]> {
         match self {
             Value::VectorGroup(vg) => Some(vg),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "glam")]
+    pub fn as_glam_vectorgroup(&self) -> Option<Vec<glam::f64::DVec3>> {
+        Some(
+            self.as_vectorgroup()?
+                .into_iter()
+                .map(|v| glam::f64::DVec3::new(v[0], v[1], v[2]))
+                .collect(),
+        )
     }
 
     pub fn as_string(&self) -> Option<&str> {
@@ -215,11 +232,8 @@ fn parse_value<'a, E: ParseError<&'a str> + ContextError<&'a str>>(
 
 fn parse_name<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, &'a str, E> {
     let allowed_special = &[
-        '_',
-        '-',
-        // these two are here because of briefings
-        '{',
-        '}',
+        '_', '-', // these two are here because of briefings
+        '{', '}',
     ];
 
     take_while1(|c: char| c.is_alphanumeric() || allowed_special.contains(&c))(vts)
@@ -300,5 +314,4 @@ mod testing {
             Ok(("", [-234.3, 5.0, 403.3,]))
         );
     }
-
 }
