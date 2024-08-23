@@ -9,6 +9,9 @@ keywords = ["parsing", "parse", "vts", "vtol", "vtolvr"]
 categories = ["parsing"]
 documentation = "https://docs.rs/vts_parsing/latest/vts_parsing"
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
 glam = ["dep:glam"]
 
