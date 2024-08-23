@@ -39,6 +39,59 @@ pub enum Value {
     Null,
 }
 
+impl Value {
+    pub fn as_number(&self) -> Option<i64> {
+        match self {
+            Value::Number(n) => Some(*n),
+            _ => None,
+        }
+    }
+
+    pub fn as_float(&self) -> Option<f64> {
+        match self {
+            Value::Float(f) => Some(*f),
+            _ => None,
+        }
+    }
+
+    /// Just like [Self::as_float], but will also convert from Value::Number.
+    pub fn as_float_cvt(&self) -> Option<f64> {
+        match self {
+            Value::Float(f) => Some(*f),
+            Value::Number(n) => Some(*n as f64),
+            _ => None,
+        }
+    }
+
+    pub fn as_bool(&self) -> Option<bool> {
+        match self {
+            Value::Boolean(b) => Some(*b),
+            _ => None,
+        }
+    }
+
+    pub fn as_vector(&self) -> Option<[f64; 3]> {
+        match self {
+            Value::Vector(v) => Some(*v),
+            _ => None,
+        }
+    }
+
+    pub fn as_vectorgroup(&self) -> Option<&[[f64; 3]]> {
+        match self {
+            Value::VectorGroup(vg) => Some(vg),
+            _ => None,
+        }
+    }
+
+    pub fn as_string(&self) -> Option<&str> {
+        match self {
+            Value::String(s) => Some(s),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {
     pub name: String,
