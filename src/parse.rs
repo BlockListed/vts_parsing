@@ -158,6 +158,15 @@ pub fn parse(vts: &str) -> Node {
     }
 }
 
+pub fn try_parse(vts: &str) -> Result<Node, String> {
+    parse_node(vts)
+        .map(|(_, node)| node)
+        .map_err(|e| match e {
+            nom::Err::Error(e) | nom::Err::Failure(e) => convert_error(vts, e),
+            _ => e.to_string()
+        })
+}
+
 fn parse_bool<'a, E: ParseError<&'a str>>(vts: &'a str) -> IResult<&'a str, bool, E> {
     let true_parser = value(true, tag("True"));
     let false_parser = value(false, tag("False"));
