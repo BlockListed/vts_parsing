@@ -119,7 +119,7 @@ impl Value {
             Value::String(s) => Some(s.into()),
             Value::Number(n) => Some(n.to_string().into()),
             Value::Float(f) => Some(f.to_string().into()),
-            Value::Boolean(b) => Some(if b { "True".to_string().into() } else { "False".to_string().into() }),
+            Value::Boolean(b) => Some(if *b { "True".to_string().into() } else { "False".to_string().into() }),
             _ => None,
         }
     }
