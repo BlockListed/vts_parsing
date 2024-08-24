@@ -107,6 +107,18 @@ impl Value {
             _ => None,
         }
     }
+
+    pub fn get_type(&self) -> &'static str {
+        match self {
+            Value::Number(_) => "number",
+            Value::Float(_) => "float",
+            Value::Boolean(_) => "bool",
+            Value::Vector(_) => "vector",
+            Value::VectorGroup(_) => "vector_group",
+            Value::String(_) => "string",
+            Value::Null => "null",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
