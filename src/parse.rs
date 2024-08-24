@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+use std::borrow::Cow;
 use std::char;
 
 use indexmap::IndexMap;
@@ -104,6 +105,21 @@ impl Value {
     pub fn as_string(&self) -> Option<&str> {
         match self {
             Value::String(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    /// Just like [Self::as_string], but will also convert from:
+    /// - [Value::Number]
+    /// - [Value::Float]
+    /// - [Value::Boolean]
+    /// Adding conversions from [Value::Vector] and [Value::VectorGroup] is also planned.
+    pub fn as_string_cvt(&self) -> Option<Cow<'_, str>> {
+        match self {
+            Value::String(s) => Some(s.into()),
+            Value::Number(n) => Some(n.to_string().into()),
+            Value::Float(f) => Some(f.to_string().into()),
+            Value::Boolean(b) => Some(if b { "True".to_string().into() } else { "False".to_string().into() }),
             _ => None,
         }
     }
