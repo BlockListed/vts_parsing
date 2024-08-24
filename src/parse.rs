@@ -55,7 +55,7 @@ impl Value {
         }
     }
 
-    /// Just like [Self::as_float], but will also convert from Value::Number.
+    /// Just like [Self::as_float], but will also convert from [Value::Number].
     pub fn as_float_cvt(&self) -> Option<f64> {
         match self {
             Value::Float(f) => Some(*f),
